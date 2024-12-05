@@ -9,6 +9,9 @@ pub(crate) enum Literal {
     StrVal { val: String },
 }
 
+type Name = String;
+// there seems to already be an ToJson instance for Name that makes it a string?
+/*
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) enum Name {
@@ -16,6 +19,7 @@ pub(crate) enum Name {
     Str { pre: Box<Name>, str: String },
     Num { pre: Box<Name>, i: u32 },
 }
+*/
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub(crate) struct LMVarId {
@@ -136,4 +140,82 @@ pub(crate) enum LeanExpr {
         #[serde(rename = "struct")]
         structure: Box<LeanExpr>,
     },
+}
+
+#[cfg(test)]
+mod tests {
+    use super::LeanExpr;
+
+    #[test]
+    fn x() {
+        let json = r#"{"forallE":
+ {"body":
+  {"forallE":
+   {"body":
+    {"app":
+     {"fn":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn": {"const": {"us": [{"succ": "zero"}], "declName": "Eq"}},
+          "arg": {"const": {"us": [], "declName": "Rat"}}}},
+        "arg":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HAdd.hAdd"}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"const": {"us": [], "declName": "Rat"}}}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero"], "declName": "instHAdd"}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"const": {"us": [], "declName": "Rat.instAdd"}}}}}},
+            "arg": {"bvar": {"deBruijnIndex": 1}}}},
+          "arg": {"bvar": {"deBruijnIndex": 0}}}}}},
+      "arg":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HAdd.hAdd"}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"const": {"us": [], "declName": "Rat"}}}},
+              "arg": {"const": {"us": [], "declName": "Rat"}}}},
+            "arg":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn": {"const": {"us": ["zero"], "declName": "instHAdd"}},
+                "arg": {"const": {"us": [], "declName": "Rat"}}}},
+              "arg": {"const": {"us": [], "declName": "Rat.instAdd"}}}}}},
+          "arg": {"bvar": {"deBruijnIndex": 0}}}},
+        "arg": {"bvar": {"deBruijnIndex": 1}}}}}},
+    "binderType": {"const": {"us": [], "declName": "Rat"}},
+    "binderName": "b",
+    "binderInfo": "default"}},
+  "binderType": {"const": {"us": [], "declName": "Rat"}},
+  "binderName": "a",
+  "binderInfo": "default"}}"#;
+        let obj: LeanExpr = serde_json::from_str(&json).unwrap();
+        println!("{:?}", obj);
+    }
 }
