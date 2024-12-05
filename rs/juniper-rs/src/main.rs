@@ -8,8 +8,6 @@ use num::{bigint::ParseBigIntError, pow::Pow, BigInt, BigRational, ToPrimitive};
 use std::io;
 use std::str::FromStr;
 
-mod lean_expr;
-
 #[derive(Hash, PartialEq, Eq, Clone, PartialOrd, Ord, Debug)]
 struct JuniperBigRational(BigRational);
 

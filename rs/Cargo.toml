@@ -1,9 +1,6 @@
-[package]
-name = "juniper-rs"
-version = "0.1.0"
-edition = "2021"
+[workspace]
 
-[dependencies]
-anyhow = "1.0.94"
-egg = "0.9.5"
-num = "0.4.3"
+members = [
+  "juniper-rs",
+  "lean-parse",
+]
