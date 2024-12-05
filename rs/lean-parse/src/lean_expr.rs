@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(crate) enum Literal {
+pub enum Literal {
     NatVal { val: u32 },
     StrVal { val: String },
 }
@@ -22,23 +22,23 @@ pub(crate) enum Name {
 */
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub(crate) struct LMVarId {
+pub struct LMVarId {
     name: Name,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub(crate) struct FVarId {
+pub struct FVarId {
     name: Name,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub(crate) struct MVarId {
+pub struct MVarId {
     name: Name,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub(crate) enum Level {
+pub enum Level {
     Zero,
     Succ(Box<Level>),
     Max(Box<Level>, Box<Level>),
@@ -49,7 +49,7 @@ pub(crate) enum Level {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(crate) enum BinderInfo {
+pub enum BinderInfo {
     Default,
     Implicit,
     StrictImplicit,
@@ -59,7 +59,7 @@ pub(crate) enum BinderInfo {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 // hell no.
-pub(crate) enum Syntax {
+pub enum Syntax {
     Missing,
     Node {},
     Atom {},
@@ -68,7 +68,7 @@ pub(crate) enum Syntax {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(crate) enum DataValue {
+pub enum DataValue {
     OfString { v: String },
     OfBool { v: bool },
     OfName { v: Name },
@@ -79,13 +79,13 @@ pub(crate) enum DataValue {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct MData(HashMap<Name, DataValue>);
+pub struct MData(HashMap<Name, DataValue>);
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "Expr")]
 #[serde(rename_all = "lowercase")]
 #[serde(rename_all_fields = "camelCase")]
-pub(crate) enum LeanExpr {
+pub enum LeanExpr {
     BVar {
         de_bruijn_index: u32,
     },
@@ -217,5 +217,6 @@ mod tests {
   "binderInfo": "default"}}"#;
         let obj: LeanExpr = serde_json::from_str(&json).unwrap();
         println!("{:?}", obj);
+        println!("{}", serde_json::to_string(&obj).unwrap());
     }
 }

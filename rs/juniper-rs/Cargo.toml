@@ -7,3 +7,4 @@ edition = "2021"
 anyhow = "1.0.94"
 egg = "0.9.5"
 num = "0.4.3"
+lean-parse = { path = "../lean-parse" }

@@ -1,4 +1,4 @@
-mod lean_expr;
+pub mod lean_expr;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
