@@ -1,6 +1,8 @@
 [workspace]
 
 members = [
-  "juniper-rs",
-  "lean-parse",
+  "juniper_bin",
+  "lean_parse",
 ]
+
+resolver = "2"

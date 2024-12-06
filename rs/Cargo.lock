@@ -119,17 +119,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d75a2a4b1b190afb6f5425f10f6a8f959d2ea0b9c2b1d79553551850539e4674"
 
 [[package]]
-name = "juniper-rs"
+name = "juniper_bin"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "egg",
- "lean-parse",
+ "lean_parse",
  "num",
 ]
 
 [[package]]
-name = "lean-parse"
+name = "lean_parse"
 version = "0.1.0"
 dependencies = [
  "serde",

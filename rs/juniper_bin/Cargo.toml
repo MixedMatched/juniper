@@ -1,5 +1,5 @@
 [package]
-name = "juniper-rs"
+name = "juniper_bin"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,4 +7,4 @@ edition = "2021"
 anyhow = "1.0.94"
 egg = "0.9.5"
 num = "0.4.3"
-lean-parse = { path = "../lean-parse" }
+lean_parse = { path = "../lean_parse" }
