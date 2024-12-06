@@ -124,7 +124,16 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "egg",
+ "juniper_math_expression",
  "lean_parse",
+ "num",
+]
+
+[[package]]
+name = "juniper_math_expression"
+version = "0.1.0"
+dependencies = [
+ "egg",
  "num",
 ]
 

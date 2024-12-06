@@ -8,3 +8,4 @@ anyhow = "1.0.94"
 egg = "0.9.5"
 num = "0.4.3"
 lean_parse = { path = "../lean_parse" }
+juniper_math_expression = { path = "../juniper_math_expression" }

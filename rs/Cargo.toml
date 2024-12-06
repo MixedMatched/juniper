@@ -1,7 +1,7 @@
 [workspace]
 
 members = [
-  "juniper_bin",
+  "juniper_bin", "juniper_math_expression",
   "lean_parse",
 ]
 
