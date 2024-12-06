@@ -3,8 +3,6 @@ use egg::{rewrite, AstSize, Extractor, Id, RecExpr, Rewrite, Runner};
 use juniper_math_expression::{approximate, ConstantFold, MathExpression};
 use std::io;
 
-mod from_lean;
-
 fn is_atomic(re: &RecExpr<MathExpression>, id: &Id) -> bool {
     match &re[*id] {
         MathExpression::Constant(_) => true,

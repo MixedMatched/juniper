@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
-use crate::ConstantFold;
-use crate::MathExpression;
 use egg::Applier;
 use egg::Pattern;
 use egg::Rewrite;
 use egg::Searcher;
+use juniper_math_expression::ConstantFold;
+use juniper_math_expression::MathExpression;
 use lean_parse::lean_expr::LeanExpr;
 
 fn lean_to_searcher(
@@ -25,4 +25,8 @@ pub fn lean_to_rewrite(
     expr: &LeanExpr,
 ) -> Result<Rewrite<MathExpression, ConstantFold>, String> {
     Rewrite::new(name, lean_to_searcher(expr), lean_to_applier(expr))
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
 }

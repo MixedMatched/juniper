@@ -130,6 +130,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "juniper_lean_to_rewrite"
+version = "0.1.0"
+dependencies = [
+ "egg",
+ "juniper_math_expression",
+ "lean_parse",
+]
+
+[[package]]
 name = "juniper_math_expression"
 version = "0.1.0"
 dependencies = [
