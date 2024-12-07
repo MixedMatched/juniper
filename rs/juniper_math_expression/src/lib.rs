@@ -1,18 +1,7 @@
-use egg::define_language;
-use egg::merge_option;
-use egg::Analysis;
-use egg::DidMerge;
-use egg::EGraph;
-use egg::Id;
-use egg::Language;
-use egg::PatternAst;
-use egg::RecExpr;
-use num::bigint::ParseBigIntError;
-use num::pow::Pow;
-use num::BigInt;
-use num::BigRational;
-use num::FromPrimitive;
-use num::ToPrimitive;
+use egg::{
+    define_language, merge_option, Analysis, DidMerge, EGraph, Id, Language, PatternAst, RecExpr,
+};
+use num::{bigint::ParseBigIntError, pow::Pow, BigInt, BigRational, FromPrimitive, ToPrimitive};
 use std::str::FromStr;
 
 #[derive(Hash, PartialEq, Eq, Clone, PartialOrd, Ord, Debug)]

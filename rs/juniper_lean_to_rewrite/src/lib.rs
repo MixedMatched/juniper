@@ -1,31 +1,60 @@
-use std::str::FromStr;
+use anyhow::Error;
+use anyhow::Result;
 
-use egg::Applier;
 use egg::Pattern;
 use egg::Rewrite;
-use egg::Searcher;
 use juniper_math_expression::ConstantFold;
 use juniper_math_expression::MathExpression;
-use lean_parse::lean_expr::LeanExpr;
+use lean_parse::lean_expr::{LeanExpr, Name};
 
-fn lean_to_searcher(
-    expr: &LeanExpr,
-) -> impl Searcher<MathExpression, ConstantFold> + Send + Sync + 'static {
-    Pattern::new(String::from_str("(* 5 5)").unwrap().parse().unwrap())
+// get the children of the first instance of a single application with the given declName
+fn expr_split_once(expr: &LeanExpr, decl_name: Name) -> Result<(LeanExpr, LeanExpr)> {
+    todo!()
 }
 
-fn lean_to_applier(
-    expr: &LeanExpr,
-) -> impl Applier<MathExpression, ConstantFold> + Send + Sync + 'static {
-    Pattern::new(String::from_str("(* 5 5)").unwrap().parse().unwrap())
+fn unwrap_forall_let(expr: &LeanExpr) -> Result<(Vec<Name>, LeanExpr)> {
+    match expr {
+        LeanExpr::ForallE {
+            binder_name,
+            binder_type,
+            body,
+            binder_info,
+        } => todo!(),
+        LeanExpr::LetE {
+            decl_name,
+            typ,
+            value,
+            body,
+            non_dep,
+        } => todo!(),
+        _ => Err(Error::msg("no forall or let found")),
+    }
 }
 
-pub fn lean_to_rewrite(
+fn expr_to_pattern(expr: &LeanExpr) -> Result<Pattern<MathExpression>> {
+    todo!()
+}
+
+pub fn eq_to_rewrite(
     name: String,
     expr: &LeanExpr,
-) -> Result<Rewrite<MathExpression, ConstantFold>, String> {
-    Rewrite::new(name, lean_to_searcher(expr), lean_to_applier(expr))
+) -> Result<[Rewrite<MathExpression, ConstantFold>; 2]> {
+    let lean_equality = expr_split_once(expr, "Eq".to_string())?;
+    let pattern_equality = (
+        expr_to_pattern(&lean_equality.0)?,
+        expr_to_pattern(&lean_equality.1)?,
+    );
+    Ok([
+        Rewrite::new(
+            name.clone(),
+            pattern_equality.0.clone(),
+            pattern_equality.1.clone(),
+        )
+        .expect("bad 1st rewrite"),
+        Rewrite::new(name, pattern_equality.1, pattern_equality.0).expect("bad 2nd rewrite"),
+    ])
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;

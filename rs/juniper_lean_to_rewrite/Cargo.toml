@@ -7,3 +7,4 @@ edition = "2021"
 lean_parse = { path = "../lean_parse" }
 juniper_math_expression = { path = "../juniper_math_expression" }
 egg = "0.9.5"
+anyhow = "1.0.94"
