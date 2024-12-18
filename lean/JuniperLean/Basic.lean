@@ -28,7 +28,10 @@ theorem zero_add_custom (a: ℚ) : (55: ℚ) + a = a := by
 theorem add_comm_custom (a b: ℚ) : a + b = b + a := by
   exact Rat.add_comm a b
 
-theorem xxx (a b c d: ℚ) (x y z: Prop) : x → y → (z ↔ a + d - c = b + a - d) := by
-  sorry
+variable (a b c : ℚ)
 
-#show_type_json decide
+def xxx : Prop := c ≠ 0
+
+theorem test : xxx c → Rat.mul c a = b := sorry
+
+#show_type_json Real
