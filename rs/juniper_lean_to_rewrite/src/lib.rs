@@ -144,6 +144,7 @@ impl Display for LMEIntermediateRep {
 }
 
 impl LMEIntermediateRep {
+    // convert a declName to an uninstantiated intermediate representation
     fn name_to_ir(name: Name) -> Result<LMEIntermediateRep> {
         match name.as_str() {
             "OfScientific.ofScientific" => Ok(LMEIntermediateRep::Const(
@@ -205,6 +206,7 @@ impl LMEIntermediateRep {
         }
     }
 
+    // parse the type components of LeanExprs into Names
     fn type_parse(arg: LeanExpr, _de_bruijn_names: Vec<Name>) -> Result<Name> {
         match arg {
             LeanExpr::Const { decl_name, .. } => Ok(decl_name),
@@ -212,12 +214,14 @@ impl LMEIntermediateRep {
         }
     }
 
+    // transitions the partial instantiation to include the next apply argument
     fn app_state_next(
         current: LMEIntermediateRep,
         arg: LeanExpr,
         de_bruijn_names: Vec<Name>,
     ) -> Result<LMEIntermediateRep> {
         // because the arguments are ordered, we only have to specify that one argument is None
+        // also this is really ugly, but that's mostly bc rust enum structs lack default support lol
         Ok(match current {
             LMEIntermediateRep::Const(LMEIntermediateConst::OfNat { out_type: None, .. }) => {
                 LMEIntermediateRep::Const(LMEIntermediateConst::OfNat {
@@ -460,12 +464,14 @@ impl LMEIntermediateRep {
         })
     }
 
+    // parses LeanExpr::App into an intermediate representation
     fn app_parse(
         function: Box<LeanExpr>,
         arg: Box<LeanExpr>,
         de_bruijn_names: Vec<Name>,
     ) -> Result<LMEIntermediateRep> {
         match *function {
+            // recursive case: App
             LeanExpr::App {
                 function: function_new,
                 arg: arg_new,
@@ -473,13 +479,16 @@ impl LMEIntermediateRep {
                 let downstream = Self::app_parse(function_new, arg_new, de_bruijn_names.clone())?;
                 Self::app_state_next(downstream, *arg, de_bruijn_names)
             }
+            // base case: Const
             LeanExpr::Const { decl_name, .. } => {
+                // we want to add the first argument to the new instance
                 Self::app_state_next(Self::name_to_ir(decl_name)?, *arg, de_bruijn_names)
             }
             _ => Err(Error::msg(format!("unknown apply component: {}", function))),
         }
     }
 
+    // recursively convert LeanExprs into intermediate representations
     fn from_lean_recursive(
         expr: LeanExpr,
         de_bruijn_names: Vec<Name>,
@@ -520,10 +529,12 @@ impl LMEIntermediateRep {
         }
     }
 
+    // convert LeanExpr into an intermediate representation
     fn from_lean(expr: LeanExpr) -> Result<LMEIntermediateRep> {
         Self::from_lean_recursive(expr, Vec::new())
     }
 
+    // split apart intermediate representations at their top-level Eq (ignoring Foralls)
     fn split_at_top_eq(&self) -> Option<(LMEIntermediateRep, LMEIntermediateRep)> {
         match self {
             LMEIntermediateRep::Forall { body, .. } => {
@@ -548,12 +559,14 @@ impl LMEIntermediateRep {
         }
     }
 
+    // convert intermediate representations into MathExpression Patterns
     fn to_math_expression(self) -> Result<Pattern<MathExpression>> {
         // this is really dumb, but I don't want to deal with RecExpr Ids
         Ok(format!("{self}").parse()?)
     }
 }
 
+// convert a list of named LeanExprs into egg MathExpression rewrite rules
 pub fn lean_to_rewrites(
     lean_exprs: Vec<(Name, LeanExpr)>,
 ) -> Result<Vec<Rewrite<MathExpression, ConstantFold>>> {
