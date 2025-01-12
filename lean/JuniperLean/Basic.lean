@@ -22,7 +22,7 @@ elab "#show_type_json " t:term : command => Lean.Elab.Command.runTermElabM fun v
   Lean.logInfo m!"{Lean.ToJson.toJson typ}"
 
 -- your example
-theorem zero_add_custom (a: ℚ) : (55: ℚ) + a = a := by
+theorem zero_add_custom (b: ℚ) : (0: ℚ) = b := by
   sorry
 
 theorem add_comm_custom (a b: ℚ) : a + b = b + a := by
@@ -34,4 +34,4 @@ def xxx : Prop := c ≠ 0
 
 theorem test : xxx c → Rat.mul c a = b := sorry
 
-#show_type_json Real
+#show_type_json zero_add_custom

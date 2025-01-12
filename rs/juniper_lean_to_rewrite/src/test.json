@@ -1,0 +1,191 @@
+{"forallE":
+ {"body":
+  {"forallE":
+   {"body":
+    {"forallE":
+     {"body":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn": {"const": {"us": [{"succ": "zero"}], "declName": "Eq"}},
+            "arg": {"const": {"us": [], "declName": "Rat"}}}},
+          "arg":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn":
+                    {"app":
+                     {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HAdd.hAdd"}},
+                      "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero"], "declName": "instHAdd"}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"const": {"us": [], "declName": "Rat.instAdd"}}}}}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn":
+                    {"app":
+                     {"fn":
+                      {"app":
+                       {"fn":
+                        {"app":
+                         {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HMul.hMul"}},
+                          "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                        "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                      "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                    "arg":
+                    {"app":
+                     {"fn":
+                      {"app":
+                       {"fn": {"const": {"us": ["zero"], "declName": "instHMul"}},
+                        "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                      "arg": {"const": {"us": [], "declName": "Rat.instMul"}}}}}},
+                  "arg": {"bvar": {"deBruijnIndex": 2}}}},
+                "arg":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn":
+                    {"app":
+                     {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+                      "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                    "arg": {"lit": {"natVal": {"val": 6}}}}},
+                  "arg":
+                  {"app":
+                   {"fn": {"const": {"us": [], "declName": "Rat.instOfNat"}},
+                    "arg": {"lit": {"natVal": {"val": 6}}}}}}}}}}},
+            "arg": {"bvar": {"deBruijnIndex": 1}}}}}},
+        "arg":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HMul.hMul"}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"const": {"us": [], "declName": "Rat"}}}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero"], "declName": "instHMul"}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"const": {"us": [], "declName": "Rat.instMul"}}}}}},
+            "arg":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"lit": {"natVal": {"val": 3}}}}},
+              "arg":
+              {"app":
+               {"fn": {"const": {"us": [], "declName": "Rat.instOfNat"}}, "arg": {"lit": {"natVal": {"val": 3}}}}}}}}},
+          "arg":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn":
+                    {"app":
+                     {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HAdd.hAdd"}},
+                      "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero"], "declName": "instHAdd"}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"const": {"us": [], "declName": "Rat.instAdd"}}}}}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"lit": {"natVal": {"val": 2}}}}},
+                "arg":
+                {"app":
+                 {"fn": {"const": {"us": [], "declName": "Rat.instOfNat"}},
+                  "arg": {"lit": {"natVal": {"val": 2}}}}}}}}},
+            "arg":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn":
+                    {"app":
+                     {"fn":
+                      {"app":
+                       {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HDiv.hDiv"}},
+                        "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                      "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg":
+                  {"app":
+                   {"fn":
+                    {"app":
+                     {"fn": {"const": {"us": ["zero"], "declName": "instHDiv"}},
+                      "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                    "arg": {"const": {"us": [], "declName": "Rat.instDiv"}}}}}},
+                "arg": {"bvar": {"deBruijnIndex": 0}}}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"lit": {"natVal": {"val": 4}}}}},
+                "arg":
+                {"app":
+                 {"fn": {"const": {"us": [], "declName": "Rat.instOfNat"}},
+                  "arg": {"lit": {"natVal": {"val": 4}}}}}}}}}}}}}}},
+      "binderType": {"const": {"us": [], "declName": "Rat"}},
+      "binderName": "c",
+      "binderInfo": "default"}},
+    "binderType": {"const": {"us": [], "declName": "Rat"}},
+    "binderName": "b",
+    "binderInfo": "default"}},
+  "binderType": {"const": {"us": [], "declName": "Rat"}},
+  "binderName": "a",
+  "binderInfo": "default"}}

@@ -2,12 +2,13 @@ use std::collections::HashMap;
 use std::fmt::Display;
 
 use display_tree::{write_tree, DisplayTree};
+use num::BigInt;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum Literal {
-    NatVal { val: u32 },
+    NatVal { val: u64 },
     StrVal { val: String },
 }
 
@@ -137,8 +138,8 @@ pub enum DataValue {
     OfString { v: String },
     OfBool { v: bool },
     OfName { v: Name },
-    OfNat { v: u32 },
-    OfInt { v: i32 },
+    OfNat { v: u64 },
+    OfInt { v: i64 },
     OfSyntax { v: Syntax },
 }
 
@@ -229,6 +230,12 @@ pub enum LeanExpr {
         #[tree]
         structure: Box<LeanExpr>,
     },
+}
+
+impl Display for LeanExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write_tree!(f, *self)
+    }
 }
 
 #[cfg(test)]
