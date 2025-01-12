@@ -1,5 +1,6 @@
 use anyhow::Result;
-use egg::{rewrite, AstSize, Extractor, Id, RecExpr, Rewrite, Runner};
+use egg::{AstSize, Extractor, Id, RecExpr, Rewrite, Runner};
+use juniper_lean_to_rewrite::JuniperJsonEntry;
 use juniper_math_expression::{approximate, ConstantFold, MathExpression};
 use std::io;
 
@@ -12,25 +13,10 @@ fn is_atomic(re: &RecExpr<MathExpression>, id: &Id) -> bool {
 }
 
 fn main() -> Result<()> {
-    let rules: &[Rewrite<MathExpression, ConstantFold>] = &[
-        rewrite!("comm-add"; "(+ ?x ?y)" => "(+ ?y ?x)"),
-        rewrite!("comm-mul"; "(* ?x ?y)" => "(* ?y ?x)"),
-        rewrite!("assoc-add"; "(+ ?a (+ ?b ?c))" => "(+ (+ ?a ?b) ?c)"),
-        rewrite!("assoc-mul"; "(* ?a (* ?b ?c))" => "(* (* ?a ?b) ?c)"),
-        rewrite!("add-zero"; "(+ ?x 0)" => "?x"),
-        rewrite!("mul-zero"; "(* ?x 0)" => "0"),
-        rewrite!("mul-one"; "(* ?x 1)" => "?x"),
-        rewrite!("double-negative"; "(- (- ?x))" => "?x"),
-        rewrite!("add-negative"; "(+ ?x (- ?y))" => "(- ?x ?y)"),
-        rewrite!("cancel-sub"; "(- ?a ?a)" => "0"),
-        rewrite!("distribute"; "(* ?a (+ ?b ?c))" => "(+ (* ?a ?b) (* ?a ?c))"),
-        rewrite!("factor"; "(+ (* ?a ?b) (* ?a ?c))" => "(* ?a (+ ?b ?c))"),
-        rewrite!("add-mul"; "(+ ?a ?a)" => "(* ?a 2)"),
-        rewrite!("mul-pow"; "(* ?a ?a)" => "(^ ?a 2)"),
-        rewrite!("pow-mul"; "(* (^ ?a ?b) (^ ?a ?c))" => "(^ ?a (+ ?b ?c))"),
-        rewrite!("pow-zero"; "(^ ?a 0)" => "1"),
-        rewrite!("root-one"; "(root ?x 1)" => "?x"),
-    ];
+    let lean_theorems: Vec<JuniperJsonEntry> =
+        serde_json::from_str(include_str!("../../../exported.json"))?;
+    let rules: &[Rewrite<MathExpression, ConstantFold>] =
+        &juniper_lean_to_rewrite::lean_to_rewrites(lean_theorems)?;
 
     loop {
         println!("Enter a (lisp-y) expression: ");

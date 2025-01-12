@@ -9,3 +9,5 @@ egg = "0.9.5"
 num = "0.4.3"
 lean_parse = { path = "../lean_parse" }
 juniper_math_expression = { path = "../juniper_math_expression" }
+juniper_lean_to_rewrite = { path = "../juniper_lean_to_rewrite/" }
+serde_json = "1.0.135"

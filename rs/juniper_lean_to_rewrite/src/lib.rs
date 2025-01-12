@@ -10,6 +10,15 @@ use juniper_math_expression::MathExpression;
 use lean_parse::lean_expr::Literal;
 use lean_parse::lean_expr::{LeanExpr, Name};
 use num::BigInt;
+use serde::Deserialize;
+use serde::Serialize;
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct JuniperJsonEntry {
+    name: Name,
+    #[serde(rename = "type")]
+    typ: LeanExpr,
+}
 
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 struct Hole;
@@ -568,10 +577,10 @@ impl LMEIntermediateRep {
 
 // convert a list of named LeanExprs into egg MathExpression rewrite rules
 pub fn lean_to_rewrites(
-    lean_exprs: Vec<(Name, LeanExpr)>,
+    lean_exprs: Vec<JuniperJsonEntry>,
 ) -> Result<Vec<Rewrite<MathExpression, ConstantFold>>> {
     let mut result = Vec::new();
-    for (name, expr) in lean_exprs {
+    for JuniperJsonEntry { name, typ: expr } in lean_exprs {
         let intermediate = LMEIntermediateRep::from_lean(expr)?;
         if let Some((eq1, eq2)) = intermediate.split_at_top_eq() {
             result.push(
