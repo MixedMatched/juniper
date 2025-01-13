@@ -20,6 +20,8 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 
 1. The conceptions of certain mathematical concepts are not the same in Lean as they are in Juniper. For a myriad of reasons, many mathematical operators in Lean are defined in ways which are unusual for the uninitiated. The constant folding in Juniper does not (currently) line up with Lean's understanding of those operators.
 2. Constant folding in Juniper is also not formally specified. Accomplishing that would essentially require an entire secondary conversion process, but with more complex conversion for computable definitions of functions (which is quite far out of the scope of this project).
+3. Equality saturation is also not formalized (mostly because it comes from egg).
+4. Parsing/printing is not verified beyond unit tests.
 
 ## TODO
 - [x] create `LeanExpr` -> `egg::Pattern` infrastructure
