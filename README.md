@@ -29,7 +29,7 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] import JSON in Rust, turn it into a set of rewrites, and use that for the `egg::Runner`
 - [x] create build.rs to track Lean files and rerun some Lean command to capture JSON
 - [x] add scientific number parsing to JuniperBigRational
-- [ ] split juniper_bin into juniper_repl and juniper_lib
+- [x] split juniper_bin into juniper_repl and juniper_lib
 - [ ] write readmes and documentation for what this is and how it operates
 - [ ] add license(s)?
 - [ ] more expansive `lean_to_rewrite` architecture
