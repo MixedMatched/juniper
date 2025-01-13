@@ -1,7 +1,11 @@
 use egg::{
     define_language, merge_option, Analysis, DidMerge, EGraph, Id, Language, PatternAst, RecExpr,
 };
-use num::{bigint::ParseBigIntError, pow::Pow, BigInt, BigRational, FromPrimitive, ToPrimitive};
+use num::{
+    bigint::{ParseBigIntError, ToBigInt},
+    pow::Pow,
+    BigInt, BigRational, BigUint, FromPrimitive, ToPrimitive,
+};
 use std::str::FromStr;
 
 #[derive(Hash, PartialEq, Eq, Clone, PartialOrd, Ord, Debug)]
@@ -21,12 +25,57 @@ impl From<ParseBigIntError> for ParseBigRationalError {
 impl FromStr for JuniperBigRational {
     type Err = ParseBigRationalError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if let Some((num, denom)) = s.split_once("/") {
+        // exponent/decimal numbers (e.g. 1.68493e15)
+        if s.contains("e") && s.contains(".") {
+            if let Some((mantissa, exponent)) = s.split_once("e") {
+                let exponent_bigint = exponent.parse::<BigUint>()?;
+                let pow: BigInt = Pow::pow(Into::<BigInt>::into(10), exponent_bigint);
+                if let Some((mantissa, decimal)) = mantissa.split_once(".") {
+                    let mantissa_bigint = mantissa.parse::<BigInt>()?;
+                    let decimal_bigint = decimal.parse::<BigInt>()?;
+                    let decimal_rational = BigRational::new(
+                        decimal_bigint,
+                        Pow::pow(Into::<BigInt>::into(10), decimal.len()),
+                    );
+                    Ok(JuniperBigRational(
+                        (decimal_rational + mantissa_bigint) * pow.to_bigint().unwrap(),
+                    ))
+                } else {
+                    Err(ParseBigRationalError::Invalid)
+                }
+            } else {
+                Err(ParseBigRationalError::Invalid)
+            }
+        }
+        // decimal numbers (e.g. 2.58486)
+        else if let Some((mantissa, decimal)) = s.split_once(".") {
+            let mantissa_bigint = mantissa.parse::<BigInt>()?;
+            let decimal_bigint = decimal.parse::<BigInt>()?;
+            let decimal_rational = BigRational::new(
+                decimal_bigint,
+                Pow::pow(Into::<BigInt>::into(10), decimal.len()),
+            );
+            Ok(JuniperBigRational(decimal_rational + mantissa_bigint))
+        }
+        // exponent numbers (e.g. 5e55)
+        else if let Some((mantissa, exponent)) = s.split_once("e") {
+            let mantissa_bigint = mantissa.parse::<BigInt>()?;
+            let exponent_bigint = exponent.parse::<BigUint>()?;
+            let pow: BigInt = Pow::pow(Into::<BigInt>::into(10), exponent_bigint);
+            Ok(JuniperBigRational(BigRational::new(
+                mantissa_bigint * pow.to_bigint().unwrap(),
+                1.into(),
+            )))
+        }
+        // fractional numbers (e.g. 1/2)
+        else if let Some((num, denom)) = s.split_once("/") {
             Ok(JuniperBigRational(BigRational::new(
                 num.parse::<BigInt>()?,
                 denom.parse::<BigInt>()?,
             )))
-        } else {
+        }
+        // integers (e.g. 2999568)
+        else {
             Ok(JuniperBigRational(BigRational::new(
                 s.parse::<BigInt>()?,
                 1.into(),
