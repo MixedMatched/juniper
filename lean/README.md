@@ -1,1 +1,3 @@
-# juniper-lean
+# JuniperLean
+
+This is the Lean project representing the formal specification for the Juniper library. Architecturally, it defines a simple env attribute (`@[juniper_json]`), which stores the type and name information for all tagged theorems, and a command (`#save_juniper_json`), which saves the type and name information into a given json file. That json is then parsed into rewrite rules on the Rust side.

@@ -1,6 +1,6 @@
 # Juniper CAS
 
-Juniper is a formally-specified computer algebra system written in Rust and formalized in Lean 4. This project is meant to be a demonstration of how these systems can work together, and not necessarily a ready-made library.
+Juniper is a formally-specified computer algebra system written in Rust and formalized in Lean 4. This is meant to be a toy project to demonstrate how these systems can work together, and not really a ready-made library.
 
 ## What?
 
@@ -12,9 +12,15 @@ A high-level overview:
 
 Proven theorems in the Lean 4 project are exported as JSON and imported into Rust. Then, those theorems are converted into [rewriting rules](https://en.wikipedia.org/wiki/Rewriting) by extracting `Forall`s as variables. Finally, [egg](https://egraphs-good.github.io/) is used to find the simplest form for a given statement using the rewriting rules obtained from Lean.
 
-For a more detailed explanation, visit lean/README.md and rs/README.md.
+For a more detailed explanation, see the [Lean README](lean/README.md) and the [Rust README](rs/README.md).
 
-## (Un)Soundness
+## Mathematical details
+
+### Domain
+
+While the basic datatype of numbers in this project are Rationals, the operating domain of mathematical rules is not. All numbers and expressions should be expected to be in the Reals, but only the Rational subset of the Reals are represented by constants. Approximation is also done in the Reals (but represented by floats).
+
+### (Un)Soundness
 
 The point of this project is not to create a perfectly sound CAS using Lean proofs[^1], more to demonstrate how results in Lean can be automatically leveraged and utilized for computer algebra (or other similar rule-rewriting systems). A few things result from this distinction:
 
@@ -30,10 +36,10 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] create build.rs to track Lean files and rerun some Lean command to capture JSON
 - [x] add scientific number parsing to JuniperBigRational
 - [x] split juniper_bin into juniper_repl and juniper_lib
-- [ ] write readmes and documentation for what this is and how it operates
-- [ ] add license(s)?
+- [x] write readmes and documentation for what this is and how it operates
+- [x] add license(s)?
 - [x] more expansive `lean_to_rewrite` architecture
-- [ ] add automatic conditionals (e.g. encoding `x` as a rewrite condition for `x → a / 2 = a * (1 / 2)`) to `lean_to_rewrite`
+- [ ] add support for automatic conditionals (e.g. encoding `x` as a rewrite condition for `x → a / 2 = a * (1 / 2)`) to `lean_to_rewrite`
 - [ ] write the actual set of theorems for conversion into the CAS
 - [ ] create system to turn `egg::Explanation` into Lean proofs (either textually (lol) or with a proof certificate)
 
