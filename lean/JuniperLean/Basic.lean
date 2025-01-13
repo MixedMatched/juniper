@@ -2,8 +2,10 @@ import Mathlib
 import JuniperLean.JuniperJson
 
 @[juniper_json]
-theorem zero_add_custom (a b: ℚ) : a * 6 + b = 3 * (2 + 1 / 4) := by
-  sorry
+theorem add_zero_custom (a: ℚ) : a + 0 = a := by
+  exact Rat.add_zero a
+
+theorem
 
 @[juniper_json]
 theorem add_comm_custom (a b: ℚ) : a + b = b + a := by

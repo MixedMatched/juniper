@@ -18,7 +18,7 @@ instance : ToJson MData where
 deriving instance ToJson for Expr
 
 -- some really thin boilerplate around `inferType`
-elab "#show_type_json " t:term : command => Command.runTermElabM fun vars => do
+elab "#show_type_json " t:term : command => Command.runTermElabM fun _ => do
   let e ← Term.elabTerm t none
   let typ ← inferType e
   logInfo m!"{ToJson.toJson typ}"
@@ -64,6 +64,7 @@ elab_rules : command
   for entry in jj do
     println! ToJson.toJson entry
 
+-- should probably be replaced with a more elegant solution lol
 syntax (name := saveJuniperJson) "#save_juniper_json" term : command
 
 @[command_elab saveJuniperJson] def saveJuniperJsonElab : CommandElab := fun stx => do
