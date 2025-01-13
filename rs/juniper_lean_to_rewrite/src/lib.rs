@@ -97,13 +97,23 @@ enum LMEIntermediateRep {
         in2: Option<Box<LMEIntermediateRep>>,
     },
     HBool {
-        operator: Option<Name>,
+        operator: Option<String>,
         in1_type: Option<Name>,
         in2_type: Option<Name>,
         out_type: Option<Name>,
         inst: Option<Hole>,
         in1: Option<Box<LMEIntermediateRep>>,
         in2: Option<Box<LMEIntermediateRep>>,
+    },
+    TUnary {
+        operator: Option<String>,
+        all_type: Option<Name>,
+        inst: Option<Hole>,
+        in1: Option<Box<LMEIntermediateRep>>,
+    },
+    IUnary {
+        operator: Option<String>,
+        in1: Option<Box<LMEIntermediateRep>>,
     },
 }
 
@@ -140,6 +150,18 @@ impl Display for LMEIntermediateRep {
                         } else {
                             write!(f, "")
                         }
+                    } else {
+                        write!(f, "")
+                    }
+                } else {
+                    write!(f, "")
+                }
+            }
+            LMEIntermediateRep::TUnary { operator, in1, .. }
+            | LMEIntermediateRep::IUnary { operator, in1 } => {
+                if let Some(in1) = in1 {
+                    if let Some(operator) = operator {
+                        write!(f, "({operator} {in1})")
                     } else {
                         write!(f, "")
                     }
@@ -209,6 +231,33 @@ impl LMEIntermediateRep {
                 inst: None,
                 in1: None,
                 in2: None,
+            }),
+            "HPow.hPow" => Ok(LMEIntermediateRep::HBool {
+                operator: Some("^".to_string()),
+                in1_type: None,
+                in2_type: None,
+                out_type: None,
+                inst: None,
+                in1: None,
+                in2: None,
+            }),
+            "Neg.neg" => Ok(LMEIntermediateRep::TUnary {
+                operator: Some("-".to_string()),
+                all_type: None,
+                inst: None,
+                in1: None,
+            }),
+            "Real.sin" => Ok(LMEIntermediateRep::IUnary {
+                operator: Some("sin".to_string()),
+                in1: None,
+            }),
+            "Real.cos" => Ok(LMEIntermediateRep::IUnary {
+                operator: Some("cos".to_string()),
+                in1: None,
+            }),
+            "Real.sqrt" => Ok(LMEIntermediateRep::IUnary {
+                operator: Some("sqrt".to_string()),
+                in1: None,
             }),
             _ => Err(Error::msg(format!("unknown name: {}", name))),
         }
@@ -459,6 +508,51 @@ impl LMEIntermediateRep {
                 inst,
                 in1,
                 in2: Some(Box::new(Self::from_lean_recursive(
+                    arg,
+                    de_bruijn_names.clone(),
+                )?)),
+            },
+            LMEIntermediateRep::TUnary {
+                operator,
+                all_type: None,
+                ..
+            } => LMEIntermediateRep::TUnary {
+                operator,
+                all_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
+                inst: None,
+                in1: None,
+            },
+            LMEIntermediateRep::TUnary {
+                operator,
+                all_type,
+                inst: None,
+                ..
+            } => LMEIntermediateRep::TUnary {
+                operator,
+                all_type,
+                inst: Some(Hole),
+                in1: None,
+            },
+            LMEIntermediateRep::TUnary {
+                operator,
+                all_type,
+                inst,
+                in1: None,
+            } => LMEIntermediateRep::TUnary {
+                operator,
+                all_type,
+                inst,
+                in1: Some(Box::new(Self::from_lean_recursive(
+                    arg,
+                    de_bruijn_names.clone(),
+                )?)),
+            },
+            LMEIntermediateRep::IUnary {
+                operator,
+                in1: None,
+            } => LMEIntermediateRep::IUnary {
+                operator,
+                in1: Some(Box::new(Self::from_lean_recursive(
                     arg,
                     de_bruijn_names.clone(),
                 )?)),

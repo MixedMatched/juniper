@@ -32,7 +32,7 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] split juniper_bin into juniper_repl and juniper_lib
 - [ ] write readmes and documentation for what this is and how it operates
 - [ ] add license(s)?
-- [ ] more expansive `lean_to_rewrite` architecture
+- [x] more expansive `lean_to_rewrite` architecture
 - [ ] add automatic conditionals (e.g. encoding `x` as a rewrite condition for `x → a / 2 = a * (1 / 2)`) to `lean_to_rewrite`
 - [ ] write the actual set of theorems for conversion into the CAS
 - [ ] create system to turn `egg::Explanation` into Lean proofs (either textually (lol) or with a proof certificate)

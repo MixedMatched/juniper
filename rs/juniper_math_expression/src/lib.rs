@@ -99,7 +99,7 @@ define_language! {
         "*" = Mul([Id; 2]),
         "/" = Div([Id; 2]),
         "^" = Pow([Id; 2]),
-        "root" = Root([Id; 2]),
+        "sqrt" = Sqrt(Id),
         "-" = Neg(Id),
         "sin" = Sin(Id),
         "cos" = Cos(Id),
@@ -201,25 +201,7 @@ pub fn approximate(re: &RecExpr<MathExpression>, id: &Id) -> Option<f64> {
         MathExpression::Mul([a, b]) => Some(approximate(re, &a)? * approximate(re, &b)?),
         MathExpression::Div([a, b]) => Some(approximate(re, &a)? / approximate(re, &b)?),
         MathExpression::Pow([a, b]) => Some(approximate(re, &a)?.powf(approximate(re, &b)?)),
-        MathExpression::Root([a, b]) => Some(match &re[*b] {
-            MathExpression::Constant(JuniperBigRational(big_rat)) => {
-                if big_rat.denom() == &BigInt::from_u8(1)? {
-                    if let Some(numer) = big_rat.numer().to_i8() {
-                        match numer {
-                            1 => approximate(re, &a)?,
-                            2 => approximate(re, &a)?.sqrt(),
-                            3 => approximate(re, &a)?.cbrt(),
-                            _ => return None,
-                        }
-                    } else {
-                        return None;
-                    }
-                } else {
-                    return None;
-                }
-            }
-            _ => return None,
-        }),
+        MathExpression::Sqrt(a) => Some(approximate(re, &a)?.sqrt()),
         MathExpression::Neg(n) => Some(-approximate(re, &n)?),
         MathExpression::Sin(n) => Some(approximate(re, &n)?.sin()),
         MathExpression::Cos(n) => Some(approximate(re, &n)?.cos()),
