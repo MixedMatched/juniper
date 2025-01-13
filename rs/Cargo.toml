@@ -1,8 +1,8 @@
 [workspace]
 
 members = [
-  "juniper_bin", "juniper_lean_to_rewrite", "juniper_math_expression",
-  "lean_parse",
+  "juniper_lib", "juniper_lean_to_rewrite", "juniper_math_expression",
+  "lean_parse", "juniper_repl",
 ]
 
 resolver = "2"

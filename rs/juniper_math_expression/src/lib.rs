@@ -114,7 +114,10 @@ pub struct ConstantFold;
 impl Analysis<MathExpression> for ConstantFold {
     type Data = Option<(JuniperBigRational, PatternAst<MathExpression>)>;
 
-    fn make(egraph: &EGraph<MathExpression, ConstantFold>, enode: &MathExpression) -> Self::Data {
+    fn make(
+        egraph: &mut EGraph<MathExpression, ConstantFold>,
+        enode: &MathExpression,
+    ) -> Self::Data {
         let x = |i: &Id| egraph[*i].data.as_ref().map(|d| d.0.clone());
         Some(match enode {
             MathExpression::Constant(c) => (c.clone(), format!("{}", c).parse().unwrap()),

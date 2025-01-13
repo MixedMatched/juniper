@@ -1,0 +1,9 @@
+[package]
+name = "juniper_repl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.95"
+egg = "0.10.0"
+juniper_lib = { path = "../juniper_lib" }

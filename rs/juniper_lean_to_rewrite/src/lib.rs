@@ -1,7 +1,6 @@
 use std::fmt::Display;
 
-use anyhow::Error;
-use anyhow::Result;
+use anyhow::{Error, Result};
 
 use egg::Pattern;
 use egg::Rewrite;

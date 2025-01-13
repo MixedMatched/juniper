@@ -1,22 +1,10 @@
 use anyhow::Result;
-use egg::{AstSize, Extractor, Id, RecExpr, Rewrite, Runner};
-use juniper_lean_to_rewrite::JuniperJsonEntry;
-use juniper_math_expression::{approximate, ConstantFold, MathExpression};
+use egg::{AstSize, Extractor, Id, RecExpr, Runner};
+use juniper_lib::{approximate, get_juniper_rules, is_atomic, ConstantFold, MathExpression};
 use std::io;
 
-fn is_atomic(re: &RecExpr<MathExpression>, id: &Id) -> bool {
-    match &re[*id] {
-        MathExpression::Constant(_) => true,
-        MathExpression::Variable(_) => true,
-        _ => false,
-    }
-}
-
 fn main() -> Result<()> {
-    let lean_theorems: Vec<JuniperJsonEntry> =
-        serde_json::from_str(include_str!("../../../exported.json"))?;
-    let rules: &[Rewrite<MathExpression, ConstantFold>] =
-        &juniper_lean_to_rewrite::lean_to_rewrites(lean_theorems)?;
+    let rules = get_juniper_rules()?;
 
     loop {
         println!("Enter a (lisp-y) expression: ");
@@ -26,7 +14,7 @@ fn main() -> Result<()> {
                 let expr: RecExpr<MathExpression> = input.parse()?;
 
                 let runner: Runner<MathExpression, ConstantFold> =
-                    Runner::default().with_expr(&expr).run(rules);
+                    Runner::default().with_expr(&expr).run(&rules);
                 let extractor = Extractor::new(&runner.egraph, AstSize);
 
                 let (_, best_expr) = extractor.find_best(runner.roots[0]);

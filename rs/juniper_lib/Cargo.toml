@@ -1,11 +1,11 @@
 [package]
-name = "juniper_bin"
+name = "juniper_lib"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 anyhow = "1.0.94"
-egg = "0.9.5"
+egg = "0.10.0"
 num = "0.4.3"
 lean_parse = { path = "../lean_parse" }
 juniper_math_expression = { path = "../juniper_math_expression" }
