@@ -25,7 +25,7 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] create `LeanExpr` -> `egg::Pattern` infrastructure
 - [x] create JuniperLean attribute to automatically turn marked theorems into JSON, and export them to a given file
 - [x] import JSON in Rust, turn it into a set of rewrites, and use that for the `egg::Runner`
-- [ ] create build.rs to track Lean files and rerun some Lean command to capture JSON
+- [x] create build.rs to track Lean files and rerun some Lean command to capture JSON
 - [ ] add scientific number parsing to JuniperBigRational
 - [ ] split juniper_bin into juniper_repl and juniper_lib
 - [ ] write readmes and documentation for what this is and how it operates

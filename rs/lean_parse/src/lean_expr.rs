@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::fmt::Display;
 
 use display_tree::{write_tree, DisplayTree};
-use num::BigInt;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -240,7 +239,7 @@ impl Display for LeanExpr {
 
 #[cfg(test)]
 mod tests {
-    use display_tree::{print_tree, println_tree, AsTree};
+    use display_tree::println_tree;
 
     use super::LeanExpr;
 
