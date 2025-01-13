@@ -39,7 +39,8 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] write readmes and documentation for what this is and how it operates
 - [x] add license(s)?
 - [x] more expansive `lean_to_rewrite` architecture
-- [ ] add support for automatic conditionals (e.g. encoding `x` as a rewrite condition for `x → a / 2 = a * (1 / 2)`) to `lean_to_rewrite`
+- [x] add support for automatic conditionals (e.g. encoding `x` as a rewrite condition for `x → a / 2 = a * (1 / 2)`) to `lean_to_rewrite`
+- [ ] add environment support (being able to assign variables, e.g. `(= x (* 5 y))` and `x / 5` → `y`)
 - [ ] write the actual set of theorems for conversion into the CAS
 - [ ] create system to turn `egg::Explanation` into Lean proofs (either textually (lol) or with a proof certificate)
 

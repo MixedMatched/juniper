@@ -1,9 +1,17 @@
+use std::env::Args;
 use std::fmt::Display;
 
 use anyhow::{Error, Result};
 
+use egg::Applier;
+use egg::Condition;
+use egg::ConditionEqual;
+use egg::ConditionalApplier;
+use egg::EGraph;
+use egg::Id;
 use egg::Pattern;
 use egg::Rewrite;
+use egg::Subst;
 use juniper_math_expression::ConstantFold;
 use juniper_math_expression::MathExpression;
 use lean_parse::lean_expr::Literal;
@@ -84,14 +92,20 @@ impl Display for LMEIntermediateConst {
 // which is partially instantiable
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 enum LMEIntermediateRep {
+    Hole,
     Const(LMEIntermediateConst),
     Var(Name),
     Forall {
         binder_name: Option<Name>,
-        binder_type: Option<Name>,
+        binder_type: Option<Box<LMEIntermediateRep>>,
         body: Option<Box<LMEIntermediateRep>>,
     },
     Eq {
+        all_type: Option<Name>,
+        in1: Option<Box<LMEIntermediateRep>>,
+        in2: Option<Box<LMEIntermediateRep>>,
+    },
+    Ne {
         all_type: Option<Name>,
         in1: Option<Box<LMEIntermediateRep>>,
         in2: Option<Box<LMEIntermediateRep>>,
@@ -120,6 +134,7 @@ enum LMEIntermediateRep {
 impl Display for LMEIntermediateRep {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            LMEIntermediateRep::Hole => write!(f, ""),
             LMEIntermediateRep::Const(c) => write!(f, "{c}"),
             LMEIntermediateRep::Var(name) => write!(f, "?{name}"),
             LMEIntermediateRep::Forall { body, .. } => {
@@ -133,6 +148,17 @@ impl Display for LMEIntermediateRep {
                 if let Some(in1) = in1 {
                     if let Some(in2) = in2 {
                         write!(f, "(= {in1} {in2})")
+                    } else {
+                        write!(f, "")
+                    }
+                } else {
+                    write!(f, "")
+                }
+            }
+            LMEIntermediateRep::Ne { in1, in2, .. } => {
+                if let Some(in1) = in1 {
+                    if let Some(in2) = in2 {
+                        write!(f, "(≠ {in1} {in2})")
                     } else {
                         write!(f, "")
                     }
@@ -192,6 +218,11 @@ impl LMEIntermediateRep {
                 inst: None,
             })),
             "Eq" => Ok(LMEIntermediateRep::Eq {
+                all_type: None,
+                in1: None,
+                in2: None,
+            }),
+            "Ne" => Ok(LMEIntermediateRep::Ne {
                 all_type: None,
                 in1: None,
                 in2: None,
@@ -414,6 +445,35 @@ impl LMEIntermediateRep {
                     de_bruijn_names.clone(),
                 )?)),
             },
+            LMEIntermediateRep::Ne { all_type: None, .. } => LMEIntermediateRep::Ne {
+                all_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
+                in1: None,
+                in2: None,
+            },
+            LMEIntermediateRep::Ne {
+                all_type,
+                in1: None,
+                ..
+            } => LMEIntermediateRep::Ne {
+                all_type,
+                in1: Some(Box::new(Self::from_lean_recursive(
+                    arg,
+                    de_bruijn_names.clone(),
+                )?)),
+                in2: None,
+            },
+            LMEIntermediateRep::Ne {
+                all_type,
+                in1,
+                in2: None,
+            } => LMEIntermediateRep::Ne {
+                all_type,
+                in1,
+                in2: Some(Box::new(Self::from_lean_recursive(
+                    arg,
+                    de_bruijn_names.clone(),
+                )?)),
+            },
             LMEIntermediateRep::HBool {
                 operator,
                 in1_type: None,
@@ -603,7 +663,10 @@ impl LMEIntermediateRep {
                 binder_info: _,
             } => Ok(LMEIntermediateRep::Forall {
                 binder_name: Some(binder_name.clone()),
-                binder_type: Some(Self::type_parse(*binder_type, de_bruijn_names.clone())?),
+                binder_type: Some(Box::new(Self::from_lean_recursive(
+                    *binder_type,
+                    de_bruijn_names.clone(),
+                )?)),
                 body: Some(Box::new(Self::from_lean_recursive(*body, {
                     let mut new_names = de_bruijn_names.clone();
                     new_names.push(binder_name);
@@ -624,6 +687,7 @@ impl LMEIntermediateRep {
                     )));
                 },
             )),
+            LeanExpr::Const { .. } => Ok(LMEIntermediateRep::Hole),
             _ => Err(Error::msg(format!(
                 "improper top-level structure: {}",
                 expr
@@ -636,12 +700,32 @@ impl LMEIntermediateRep {
         Self::from_lean_recursive(expr, Vec::new())
     }
 
-    // split apart intermediate representations at their top-level Eq (ignoring Foralls)
-    fn split_at_top_eq(&self) -> Option<(LMEIntermediateRep, LMEIntermediateRep)> {
+    // split apart intermediate representations at their top-level Eq (collecting condition Foralls and ignoring others)
+    fn split_at_top_eq(
+        &self,
+        conditions: Vec<LMEIntermediateRep>,
+    ) -> Option<(
+        Vec<LMEIntermediateRep>,
+        LMEIntermediateRep,
+        LMEIntermediateRep,
+    )> {
         match self {
-            LMEIntermediateRep::Forall { body, .. } => {
+            LMEIntermediateRep::Forall {
+                body, binder_type, ..
+            } => {
                 if let Some(body) = body {
-                    body.split_at_top_eq()
+                    if let Some(binder_type) = binder_type {
+                        match *binder_type.clone() {
+                            LMEIntermediateRep::Hole => body.split_at_top_eq(conditions),
+                            b => body.split_at_top_eq({
+                                let mut new_conditions = conditions.clone();
+                                new_conditions.push(b);
+                                new_conditions
+                            }),
+                        }
+                    } else {
+                        None
+                    }
                 } else {
                     None
                 }
@@ -649,7 +733,7 @@ impl LMEIntermediateRep {
             LMEIntermediateRep::Eq { in1, in2, .. } => {
                 if let Some(in1) = in1 {
                     if let Some(in2) = in2 {
-                        Some(((**in1).clone(), (**in2).clone()))
+                        Some((conditions, (**in1).clone(), (**in2).clone()))
                     } else {
                         None
                     }
@@ -661,11 +745,71 @@ impl LMEIntermediateRep {
         }
     }
 
+    fn as_condition(
+        self,
+    ) -> Result<
+        Box<dyn Fn(&mut EGraph<MathExpression, ConstantFold>, Id, &Subst) -> bool + Send + Sync>,
+    > {
+        match self {
+            LMEIntermediateRep::Eq { in1: Some(in1), in2: Some(in2), .. } => {
+                let in1 = in1.to_math_expression()?;
+                let in2 = in2.to_math_expression()?;
+
+                let check_eq = ConditionEqual::new(in1, in2);
+
+                Ok(Box::new(move |egraph, id, subst| {
+                    check_eq.check(egraph, id, subst)
+                }))
+            },
+            LMEIntermediateRep::Ne {  in1: Some(in1), in2: Some(in2), .. } => {
+                let in1 = in1.to_math_expression()?;
+                let in2 = in2.to_math_expression()?;
+
+                let check_eq = ConditionEqual::new(in1, in2);
+
+                // this is technically unsound (if, in the future, in1 = in2, just not when you're
+                // currently checking)
+                Ok(Box::new(move |egraph, id, subst| {
+                    !check_eq.check(egraph, id, subst)
+                }))
+            }
+            _ => Err(Error::msg(format!("LMEIntermediateRep::as_condition could not successfully convert the condition {self} into a closure"))),
+        }
+    }
+
     // convert intermediate representations into MathExpression Patterns
     fn to_math_expression(self) -> Result<Pattern<MathExpression>> {
         // this is really dumb, but I don't want to deal with RecExpr Ids
         Ok(format!("{self}").parse()?)
     }
+}
+
+// this is truly closure hell lol
+fn create_condition_applier(
+    applier: Pattern<MathExpression>,
+    conditions: Vec<LMEIntermediateRep>,
+) -> Result<
+    ConditionalApplier<
+        Box<dyn Fn(&mut EGraph<MathExpression, ConstantFold>, Id, &Subst) -> bool + Send + Sync>,
+        Pattern<MathExpression>,
+    >,
+> {
+    Ok(ConditionalApplier {
+        condition: Box::new({
+            conditions.into_iter().try_rfold::<Box<
+                dyn Fn(&mut EGraph<MathExpression, ConstantFold>, Id, &Subst) -> bool + Send + Sync,
+            >, _, Result<_>>(
+                Box::new(|_, _, _| true),
+                |acc, condition| {
+                    let condition_function = condition.clone().as_condition()?;
+                    Ok(Box::new(move |e, i, s| {
+                        acc(e, i, s) && condition_function(e, i, s)
+                    }))
+                },
+            )?
+        }),
+        applier,
+    })
 }
 
 // convert a list of named LeanExprs into egg MathExpression rewrite rules
@@ -675,10 +819,14 @@ pub fn lean_to_rewrites(
     let mut result = Vec::new();
     for JuniperJsonEntry { name, typ: expr } in lean_exprs {
         let intermediate = LMEIntermediateRep::from_lean(expr)?;
-        if let Some((eq1, eq2)) = intermediate.split_at_top_eq() {
+        if let Some((conditions, eq1, eq2)) = intermediate.split_at_top_eq(Vec::new()) {
             result.push(
-                Rewrite::new(name, eq1.to_math_expression()?, eq2.to_math_expression()?)
-                    .expect("bad rewrite"),
+                Rewrite::new(
+                    name,
+                    eq1.to_math_expression()?,
+                    create_condition_applier(eq2.to_math_expression()?, conditions)?,
+                )
+                .expect("bad rewrite"),
             );
         } else {
             return Err(Error::msg("error in some rewrite creation"));

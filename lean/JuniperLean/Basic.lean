@@ -13,11 +13,9 @@ theorem add_comm_custom (a b: ℚ) : a + b = b + a := by
 theorem double_neg (a: ℚ) : -(-a) = a:= by
   exact InvolutiveNeg.neg_neg a
 
+@[juniper_json]
+theorem test (a b: ℚ) : b = a → a * b = a := sorry
+
 #save_juniper_json "../exported.json"
 
-theorem sin_cos_one (a b: ℝ) : √ a = b := sorry
-
-#show_type_json sin_cos_one
-
-
-#show_type_json double_neg
+#show_type_json test
