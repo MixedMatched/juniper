@@ -1,8 +1,10 @@
 use egg::{merge_option, Analysis, DidMerge, EGraph, Id, Language, PatternAst};
-use num::{BigInt, BigRational, FromPrimitive, traits::{Inv, Pow}};
+use num::{
+    traits::{Inv, Pow},
+    BigInt, BigRational, FromPrimitive,
+};
 
 use crate::{JuniperBigRational, MathExpression};
-
 
 #[derive(Default, Clone)]
 pub struct ConstantFold;

@@ -1,7 +1,10 @@
 use std::str::FromStr;
 
-use num::{bigint::{ParseBigIntError, ToBigInt}, pow::Pow, BigInt, BigRational, BigUint};
-
+use num::{
+    bigint::{ParseBigIntError, ToBigInt},
+    pow::Pow,
+    BigInt, BigRational, BigUint,
+};
 
 #[derive(Hash, PartialEq, Eq, Clone, PartialOrd, Ord, Debug)]
 pub struct JuniperBigRational(pub BigRational);

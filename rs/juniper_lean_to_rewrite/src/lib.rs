@@ -26,7 +26,7 @@ enum LMEIntermediateDefinedConst {
 impl Display for LMEIntermediateDefinedConst {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            LMEIntermediateDefinedConst::Pi => write!(f, "π"),
+            Self::Pi => write!(f, "π"),
         }
     }
 }
@@ -50,14 +50,14 @@ enum LMEIntermediateConst {
 impl Display for LMEIntermediateConst {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            LMEIntermediateConst::OfNat { val, .. } => {
+            Self::OfNat { val, .. } => {
                 if let Some(val) = val {
                     write!(f, "{val}")
                 } else {
                     write!(f, "")
                 }
             }
-            LMEIntermediateConst::OfScientific {
+            Self::OfScientific {
                 mantissa,
                 exponent_sign,
                 decimal_exponent,
@@ -98,18 +98,18 @@ enum LMEIntermediateRep {
     Var(Name),
     Forall {
         binder_name: Option<Name>,
-        binder_type: Option<Box<LMEIntermediateRep>>,
-        body: Option<Box<LMEIntermediateRep>>,
+        binder_type: Option<Box<Self>>,
+        body: Option<Box<Self>>,
     },
     Eq {
         all_type: Option<Name>,
-        in1: Option<Box<LMEIntermediateRep>>,
-        in2: Option<Box<LMEIntermediateRep>>,
+        in1: Option<Box<Self>>,
+        in2: Option<Box<Self>>,
     },
     Ne {
         all_type: Option<Name>,
-        in1: Option<Box<LMEIntermediateRep>>,
-        in2: Option<Box<LMEIntermediateRep>>,
+        in1: Option<Box<Self>>,
+        in2: Option<Box<Self>>,
     },
     HBool {
         operator: Option<String>,
@@ -117,35 +117,35 @@ enum LMEIntermediateRep {
         in2_type: Option<Name>,
         out_type: Option<Name>,
         inst: Option<Hole>,
-        in1: Option<Box<LMEIntermediateRep>>,
-        in2: Option<Box<LMEIntermediateRep>>,
+        in1: Option<Box<Self>>,
+        in2: Option<Box<Self>>,
     },
     TUnary {
         operator: Option<String>,
         all_type: Option<Name>,
         inst: Option<Hole>,
-        in1: Option<Box<LMEIntermediateRep>>,
+        in1: Option<Box<Self>>,
     },
     IUnary {
         operator: Option<String>,
-        in1: Option<Box<LMEIntermediateRep>>,
+        in1: Option<Box<Self>>,
     },
 }
 
 impl Display for LMEIntermediateRep {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            LMEIntermediateRep::DefinedConst(dc) => write!(f, "{dc}"),
-            LMEIntermediateRep::Const(c) => write!(f, "{c}"),
-            LMEIntermediateRep::Var(name) => write!(f, "?{name}"),
-            LMEIntermediateRep::Forall { body, .. } => {
+            Self::DefinedConst(dc) => write!(f, "{dc}"),
+            Self::Const(c) => write!(f, "{c}"),
+            Self::Var(name) => write!(f, "?{name}"),
+            Self::Forall { body, .. } => {
                 if let Some(body) = body {
                     write!(f, "{body}")
                 } else {
                     write!(f, "")
                 }
             }
-            LMEIntermediateRep::Eq { in1, in2, .. } => {
+            Self::Eq { in1, in2, .. } => {
                 if let Some(in1) = in1 {
                     if let Some(in2) = in2 {
                         write!(f, "(= {in1} {in2})")
@@ -156,7 +156,7 @@ impl Display for LMEIntermediateRep {
                     write!(f, "")
                 }
             }
-            LMEIntermediateRep::Ne { in1, in2, .. } => {
+            Self::Ne { in1, in2, .. } => {
                 if let Some(in1) = in1 {
                     if let Some(in2) = in2 {
                         write!(f, "(≠ {in1} {in2})")
@@ -167,7 +167,7 @@ impl Display for LMEIntermediateRep {
                     write!(f, "")
                 }
             }
-            LMEIntermediateRep::HBool {
+            Self::HBool {
                 operator, in1, in2, ..
             } => {
                 if let Some(in1) = in1 {
@@ -184,8 +184,7 @@ impl Display for LMEIntermediateRep {
                     write!(f, "")
                 }
             }
-            LMEIntermediateRep::TUnary { operator, in1, .. }
-            | LMEIntermediateRep::IUnary { operator, in1 } => {
+            Self::TUnary { operator, in1, .. } | Self::IUnary { operator, in1 } => {
                 if let Some(in1) = in1 {
                     if let Some(operator) = operator {
                         write!(f, "({operator} {in1})")
@@ -202,36 +201,32 @@ impl Display for LMEIntermediateRep {
 
 impl LMEIntermediateRep {
     // convert a declName to an uninstantiated intermediate representation
-    fn name_to_ir(name: Name) -> Result<LMEIntermediateRep> {
+    fn name_to_ir(name: Name) -> Result<Self> {
         match name.as_str() {
-            "Real.pi" => Ok(LMEIntermediateRep::DefinedConst(
-                LMEIntermediateDefinedConst::Pi,
-            )),
-            "OfScientific.ofScientific" => Ok(LMEIntermediateRep::Const(
-                LMEIntermediateConst::OfScientific {
-                    out_type: None,
-                    inst: None,
-                    mantissa: None,
-                    exponent_sign: None,
-                    decimal_exponent: None,
-                },
-            )),
-            "OfNat.ofNat" => Ok(LMEIntermediateRep::Const(LMEIntermediateConst::OfNat {
+            "Real.pi" => Ok(Self::DefinedConst(LMEIntermediateDefinedConst::Pi)),
+            "OfScientific.ofScientific" => Ok(Self::Const(LMEIntermediateConst::OfScientific {
+                out_type: None,
+                inst: None,
+                mantissa: None,
+                exponent_sign: None,
+                decimal_exponent: None,
+            })),
+            "OfNat.ofNat" => Ok(Self::Const(LMEIntermediateConst::OfNat {
                 out_type: None,
                 val: None,
                 inst: None,
             })),
-            "Eq" => Ok(LMEIntermediateRep::Eq {
+            "Eq" => Ok(Self::Eq {
                 all_type: None,
                 in1: None,
                 in2: None,
             }),
-            "Ne" => Ok(LMEIntermediateRep::Ne {
+            "Ne" => Ok(Self::Ne {
                 all_type: None,
                 in1: None,
                 in2: None,
             }),
-            "HAdd.hAdd" => Ok(LMEIntermediateRep::HBool {
+            "HAdd.hAdd" => Ok(Self::HBool {
                 operator: Some("+".to_string()),
                 in1_type: None,
                 in2_type: None,
@@ -240,7 +235,7 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             }),
-            "HSub.hSub" => Ok(LMEIntermediateRep::HBool {
+            "HSub.hSub" => Ok(Self::HBool {
                 operator: Some("-".to_string()),
                 in1_type: None,
                 in2_type: None,
@@ -249,7 +244,7 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             }),
-            "HMul.hMul" => Ok(LMEIntermediateRep::HBool {
+            "HMul.hMul" => Ok(Self::HBool {
                 operator: Some("*".to_string()),
                 in1_type: None,
                 in2_type: None,
@@ -258,7 +253,7 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             }),
-            "HDiv.hDiv" => Ok(LMEIntermediateRep::HBool {
+            "HDiv.hDiv" => Ok(Self::HBool {
                 operator: Some("/".to_string()),
                 in1_type: None,
                 in2_type: None,
@@ -267,7 +262,7 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             }),
-            "HPow.hPow" => Ok(LMEIntermediateRep::HBool {
+            "HPow.hPow" => Ok(Self::HBool {
                 operator: Some("^".to_string()),
                 in1_type: None,
                 in2_type: None,
@@ -276,27 +271,27 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             }),
-            "Neg.neg" => Ok(LMEIntermediateRep::TUnary {
+            "Neg.neg" => Ok(Self::TUnary {
                 operator: Some("-".to_string()),
                 all_type: None,
                 inst: None,
                 in1: None,
             }),
-            "Inv.inv" => Ok(LMEIntermediateRep::TUnary {
+            "Inv.inv" => Ok(Self::TUnary {
                 operator: Some("inv".to_string()),
                 all_type: None,
                 inst: None,
                 in1: None,
             }),
-            "Real.sin" => Ok(LMEIntermediateRep::IUnary {
+            "Real.sin" => Ok(Self::IUnary {
                 operator: Some("sin".to_string()),
                 in1: None,
             }),
-            "Real.cos" => Ok(LMEIntermediateRep::IUnary {
+            "Real.cos" => Ok(Self::IUnary {
                 operator: Some("cos".to_string()),
                 in1: None,
             }),
-            "Real.sqrt" => Ok(LMEIntermediateRep::IUnary {
+            "Real.sqrt" => Ok(Self::IUnary {
                 operator: Some("sqrt".to_string()),
                 in1: None,
             }),
@@ -313,26 +308,22 @@ impl LMEIntermediateRep {
     }
 
     // transitions the partial instantiation to include the next apply argument
-    fn app_state_next(
-        current: LMEIntermediateRep,
-        arg: LeanExpr,
-        de_bruijn_names: Vec<Name>,
-    ) -> Result<LMEIntermediateRep> {
+    fn app_state_next(current: Self, arg: LeanExpr, de_bruijn_names: Vec<Name>) -> Result<Self> {
         // because the arguments are ordered, we only have to specify that one argument is None
         // also this is really ugly, but that's mostly bc rust enum structs lack default support lol
         Ok(match current {
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfNat { out_type: None, .. }) => {
-                LMEIntermediateRep::Const(LMEIntermediateConst::OfNat {
+            Self::Const(LMEIntermediateConst::OfNat { out_type: None, .. }) => {
+                Self::Const(LMEIntermediateConst::OfNat {
                     out_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
                     val: None,
                     inst: None,
                 })
             }
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfNat {
+            Self::Const(LMEIntermediateConst::OfNat {
                 out_type,
                 val: None,
                 ..
-            }) => LMEIntermediateRep::Const(LMEIntermediateConst::OfNat {
+            }) => Self::Const(LMEIntermediateConst::OfNat {
                 out_type,
                 val: match arg {
                     LeanExpr::Lit(Literal::NatVal { val }) => Some(val.into()),
@@ -340,42 +331,41 @@ impl LMEIntermediateRep {
                 },
                 inst: None,
             }),
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfNat {
+            Self::Const(LMEIntermediateConst::OfNat {
                 out_type,
                 val,
                 inst: None,
-            }) => LMEIntermediateRep::Const(LMEIntermediateConst::OfNat {
+            }) => Self::Const(LMEIntermediateConst::OfNat {
                 out_type,
                 val,
                 inst: Some(Hole),
             }),
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
-                out_type: None,
-                ..
-            }) => LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
-                out_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
-                inst: None,
-                mantissa: None,
-                exponent_sign: None,
-                decimal_exponent: None,
-            }),
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            Self::Const(LMEIntermediateConst::OfScientific { out_type: None, .. }) => {
+                Self::Const(LMEIntermediateConst::OfScientific {
+                    out_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
+                    inst: None,
+                    mantissa: None,
+                    exponent_sign: None,
+                    decimal_exponent: None,
+                })
+            }
+            Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst: None,
                 ..
-            }) => LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            }) => Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst: Some(Hole),
                 mantissa: None,
                 exponent_sign: None,
                 decimal_exponent: None,
             }),
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst,
                 mantissa: None,
                 ..
-            }) => LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            }) => Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst,
                 mantissa: match arg {
@@ -385,13 +375,13 @@ impl LMEIntermediateRep {
                 exponent_sign: None,
                 decimal_exponent: None,
             }),
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst,
                 mantissa,
                 exponent_sign: None,
                 ..
-            }) => LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            }) => Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst,
                 mantissa,
@@ -410,13 +400,13 @@ impl LMEIntermediateRep {
                 },
                 decimal_exponent: None,
             }),
-            LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst,
                 mantissa,
                 exponent_sign,
                 decimal_exponent: None,
-            }) => LMEIntermediateRep::Const(LMEIntermediateConst::OfScientific {
+            }) => Self::Const(LMEIntermediateConst::OfScientific {
                 out_type,
                 inst,
                 mantissa,
@@ -426,16 +416,16 @@ impl LMEIntermediateRep {
                     _ => return Err(Error::msg(format!("bad decimal_exponent: {}", arg))),
                 },
             }),
-            LMEIntermediateRep::Eq { all_type: None, .. } => LMEIntermediateRep::Eq {
+            Self::Eq { all_type: None, .. } => Self::Eq {
                 all_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
                 in1: None,
                 in2: None,
             },
-            LMEIntermediateRep::Eq {
+            Self::Eq {
                 all_type,
                 in1: None,
                 ..
-            } => LMEIntermediateRep::Eq {
+            } => Self::Eq {
                 all_type,
                 in1: Some(Box::new(Self::from_lean_recursive(
                     arg,
@@ -443,11 +433,11 @@ impl LMEIntermediateRep {
                 )?)),
                 in2: None,
             },
-            LMEIntermediateRep::Eq {
+            Self::Eq {
                 all_type,
                 in1,
                 in2: None,
-            } => LMEIntermediateRep::Eq {
+            } => Self::Eq {
                 all_type,
                 in1,
                 in2: Some(Box::new(Self::from_lean_recursive(
@@ -455,16 +445,16 @@ impl LMEIntermediateRep {
                     de_bruijn_names.clone(),
                 )?)),
             },
-            LMEIntermediateRep::Ne { all_type: None, .. } => LMEIntermediateRep::Ne {
+            Self::Ne { all_type: None, .. } => Self::Ne {
                 all_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
                 in1: None,
                 in2: None,
             },
-            LMEIntermediateRep::Ne {
+            Self::Ne {
                 all_type,
                 in1: None,
                 ..
-            } => LMEIntermediateRep::Ne {
+            } => Self::Ne {
                 all_type,
                 in1: Some(Box::new(Self::from_lean_recursive(
                     arg,
@@ -472,11 +462,11 @@ impl LMEIntermediateRep {
                 )?)),
                 in2: None,
             },
-            LMEIntermediateRep::Ne {
+            Self::Ne {
                 all_type,
                 in1,
                 in2: None,
-            } => LMEIntermediateRep::Ne {
+            } => Self::Ne {
                 all_type,
                 in1,
                 in2: Some(Box::new(Self::from_lean_recursive(
@@ -484,11 +474,11 @@ impl LMEIntermediateRep {
                     de_bruijn_names.clone(),
                 )?)),
             },
-            LMEIntermediateRep::HBool {
+            Self::HBool {
                 operator,
                 in1_type: None,
                 ..
-            } => LMEIntermediateRep::HBool {
+            } => Self::HBool {
                 operator,
                 in1_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
                 in2_type: None,
@@ -497,12 +487,12 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             },
-            LMEIntermediateRep::HBool {
+            Self::HBool {
                 operator,
                 in1_type,
                 in2_type: None,
                 ..
-            } => LMEIntermediateRep::HBool {
+            } => Self::HBool {
                 operator,
                 in1_type,
                 in2_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
@@ -511,13 +501,13 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             },
-            LMEIntermediateRep::HBool {
+            Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
                 out_type: None,
                 ..
-            } => LMEIntermediateRep::HBool {
+            } => Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
@@ -526,14 +516,14 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             },
-            LMEIntermediateRep::HBool {
+            Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
                 out_type,
                 inst: None,
                 ..
-            } => LMEIntermediateRep::HBool {
+            } => Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
@@ -542,7 +532,7 @@ impl LMEIntermediateRep {
                 in1: None,
                 in2: None,
             },
-            LMEIntermediateRep::HBool {
+            Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
@@ -550,7 +540,7 @@ impl LMEIntermediateRep {
                 inst,
                 in1: None,
                 ..
-            } => LMEIntermediateRep::HBool {
+            } => Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
@@ -562,7 +552,7 @@ impl LMEIntermediateRep {
                 )?)),
                 in2: None,
             },
-            LMEIntermediateRep::HBool {
+            Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
@@ -570,7 +560,7 @@ impl LMEIntermediateRep {
                 inst,
                 in1,
                 in2: None,
-            } => LMEIntermediateRep::HBool {
+            } => Self::HBool {
                 operator,
                 in1_type,
                 in2_type,
@@ -582,33 +572,33 @@ impl LMEIntermediateRep {
                     de_bruijn_names.clone(),
                 )?)),
             },
-            LMEIntermediateRep::TUnary {
+            Self::TUnary {
                 operator,
                 all_type: None,
                 ..
-            } => LMEIntermediateRep::TUnary {
+            } => Self::TUnary {
                 operator,
                 all_type: Some(Self::type_parse(arg, de_bruijn_names.clone())?),
                 inst: None,
                 in1: None,
             },
-            LMEIntermediateRep::TUnary {
+            Self::TUnary {
                 operator,
                 all_type,
                 inst: None,
                 ..
-            } => LMEIntermediateRep::TUnary {
+            } => Self::TUnary {
                 operator,
                 all_type,
                 inst: Some(Hole),
                 in1: None,
             },
-            LMEIntermediateRep::TUnary {
+            Self::TUnary {
                 operator,
                 all_type,
                 inst,
                 in1: None,
-            } => LMEIntermediateRep::TUnary {
+            } => Self::TUnary {
                 operator,
                 all_type,
                 inst,
@@ -617,10 +607,10 @@ impl LMEIntermediateRep {
                     de_bruijn_names.clone(),
                 )?)),
             },
-            LMEIntermediateRep::IUnary {
+            Self::IUnary {
                 operator,
                 in1: None,
-            } => LMEIntermediateRep::IUnary {
+            } => Self::IUnary {
                 operator,
                 in1: Some(Box::new(Self::from_lean_recursive(
                     arg,
@@ -641,7 +631,7 @@ impl LMEIntermediateRep {
         function: Box<LeanExpr>,
         arg: Box<LeanExpr>,
         de_bruijn_names: Vec<Name>,
-    ) -> Result<LMEIntermediateRep> {
+    ) -> Result<Self> {
         match *function {
             // recursive case: App
             LeanExpr::App {
@@ -661,17 +651,14 @@ impl LMEIntermediateRep {
     }
 
     // recursively convert LeanExprs into intermediate representations
-    fn from_lean_recursive(
-        expr: LeanExpr,
-        de_bruijn_names: Vec<Name>,
-    ) -> Result<LMEIntermediateRep> {
+    fn from_lean_recursive(expr: LeanExpr, de_bruijn_names: Vec<Name>) -> Result<Self> {
         match expr {
             LeanExpr::ForallE {
                 binder_name,
                 binder_type,
                 body,
                 binder_info: _,
-            } => Ok(LMEIntermediateRep::Forall {
+            } => Ok(Self::Forall {
                 binder_name: Some(binder_name.clone()),
                 binder_type: Some(Box::new(Self::from_lean_recursive(
                     *binder_type,
@@ -684,7 +671,7 @@ impl LMEIntermediateRep {
                 })?)),
             }),
             LeanExpr::App { function, arg } => Self::app_parse(function, arg, de_bruijn_names),
-            LeanExpr::BVar { de_bruijn_index } => Ok(LMEIntermediateRep::Var(
+            LeanExpr::BVar { de_bruijn_index } => Ok(Self::Var(
                 if let Some(name) =
                     de_bruijn_names.get(de_bruijn_names.len() - 1 - de_bruijn_index as usize)
                 {
@@ -701,9 +688,7 @@ impl LMEIntermediateRep {
                 if let Ok(ir) = Self::name_to_ir(decl_name) {
                     Ok(ir)
                 } else {
-                    Ok(LMEIntermediateRep::DefinedConst(
-                        LMEIntermediateDefinedConst::Pi,
-                    ))
+                    Ok(Self::DefinedConst(LMEIntermediateDefinedConst::Pi))
                 }
             }
             _ => Err(Error::msg(format!(
@@ -714,27 +699,20 @@ impl LMEIntermediateRep {
     }
 
     // convert LeanExpr into an intermediate representation
-    fn from_lean(expr: LeanExpr) -> Result<LMEIntermediateRep> {
+    fn from_lean(expr: LeanExpr) -> Result<Self> {
         Self::from_lean_recursive(expr, Vec::new())
     }
 
     // split apart intermediate representations at their top-level Eq (collecting condition Foralls and ignoring others)
-    fn split_at_top_eq(
-        &self,
-        conditions: Vec<LMEIntermediateRep>,
-    ) -> Option<(
-        Vec<LMEIntermediateRep>,
-        LMEIntermediateRep,
-        LMEIntermediateRep,
-    )> {
+    fn split_at_top_eq(&self, conditions: Vec<Self>) -> Option<(Vec<Self>, Self, Self)> {
         match self {
-            LMEIntermediateRep::Forall {
+            Self::Forall {
                 body, binder_type, ..
             } => {
                 if let Some(body) = body {
                     if let Some(binder_type) = binder_type {
                         match *binder_type.clone() {
-                            LMEIntermediateRep::Const(_) | LMEIntermediateRep::DefinedConst(_) => {
+                            Self::Const(_) | Self::DefinedConst(_) => {
                                 body.split_at_top_eq(conditions)
                             }
                             b => body.split_at_top_eq({
@@ -750,7 +728,7 @@ impl LMEIntermediateRep {
                     None
                 }
             }
-            LMEIntermediateRep::Eq { in1, in2, .. } => {
+            Self::Eq { in1, in2, .. } => {
                 if let Some(in1) = in1 {
                     if let Some(in2) = in2 {
                         Some((conditions, (**in1).clone(), (**in2).clone()))
@@ -771,7 +749,7 @@ impl LMEIntermediateRep {
         Box<dyn Fn(&mut EGraph<MathExpression, ConstantFold>, Id, &Subst) -> bool + Send + Sync>,
     > {
         match self {
-            LMEIntermediateRep::Eq { in1: Some(in1), in2: Some(in2), .. } => {
+            Self::Eq { in1: Some(in1), in2: Some(in2), .. } => {
                 let in1 = in1.to_math_expression()?;
                 let in2 = in2.to_math_expression()?;
 
@@ -781,7 +759,7 @@ impl LMEIntermediateRep {
                     check_eq.check(egraph, id, subst)
                 }))
             },
-            LMEIntermediateRep::Ne {  in1: Some(in1), in2: Some(in2), .. } => {
+            Self::Ne {  in1: Some(in1), in2: Some(in2), .. } => {
                 let in1 = in1.to_math_expression()?;
                 let in2 = in2.to_math_expression()?;
 
@@ -793,7 +771,7 @@ impl LMEIntermediateRep {
                     !check_eq.check(egraph, id, subst)
                 }))
             }
-            _ => Err(Error::msg(format!("LMEIntermediateRep::as_condition could not successfully convert the condition {self} into a closure"))),
+            _ => Err(Error::msg(format!("Self::as_condition could not successfully convert the condition {self} into a closure"))),
         }
     }
 
