@@ -42,7 +42,7 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] more expansive `lean_to_rewrite` architecture
 - [x] add support for automatic conditionals (e.g. encoding `x` as a rewrite condition for `x → a / 2 = a * (1 / 2)`) to `lean_to_rewrite`
 - [x] add environment support to the repl (being able to assign variables, e.g. `(= x (* 5 y))` and `x / 5` → `y`)
-- [ ] test juniper_math_expression
+- [x] test juniper_math_expression
 - [ ] test juniper_lean_to_rewrite
 - [ ] test juniper_lib
 - [ ] write the actual set of theorems for conversion into the CAS
