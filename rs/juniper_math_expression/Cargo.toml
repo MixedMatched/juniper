@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 egg = "0.10.0"
 num = "0.4.3"
+
+[dev-dependencies]
+anyhow = "1.0.95"
