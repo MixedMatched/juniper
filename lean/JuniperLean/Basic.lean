@@ -1,21 +1,27 @@
 import Mathlib
 import JuniperLean.JuniperJson
 
-@[juniper_json]
-theorem add_zero_custom (a: ℚ) : a + 0 = a := by
-  exact Rat.add_zero a
+attribute [juniper_json] Rat.add_zero
+attribute [juniper_json] Rat.add_comm
+attribute [juniper_json] Rat.add_assoc
+attribute [juniper_json] Rat.add_mul
+attribute [juniper_json] Rat.neg_add_cancel
+attribute [juniper_json] Rat.mul_assoc
+attribute [juniper_json] Rat.mul_comm
+attribute [juniper_json] Rat.mul_one
+attribute [juniper_json] Rat.mul_zero
+attribute [juniper_json] Rat.mul_inv_cancel
+attribute [juniper_json] Rat.sub_eq_add_neg
+attribute [juniper_json] Rat.inv_neg
 
 @[juniper_json]
-theorem add_comm_custom (a b: ℚ) : a + b = b + a := by
-  exact Rat.add_comm a b
-
-@[juniper_json]
-theorem double_neg (a: ℚ) : -(-a) = a:= by
+theorem involutive_neg_neg (a : ℚ) : -(-a) = a := by
   exact InvolutiveNeg.neg_neg a
 
 @[juniper_json]
-theorem test (a b: ℚ) : b = a → a * b = a := sorry
+theorem involutive_inv_inv (a : ℚ) : a⁻¹⁻¹ = a := by
+  exact InvolutiveInv.inv_inv a
 
 #save_juniper_json "../exported.json"
 
-#show_type_json test
+#show_type_json Rat.inv_neg

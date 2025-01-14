@@ -1,24 +1,12 @@
-use std::env::Args;
 use std::fmt::Display;
 
 use anyhow::{Error, Result};
 
-use egg::Applier;
-use egg::Condition;
-use egg::ConditionEqual;
-use egg::ConditionalApplier;
-use egg::EGraph;
-use egg::Id;
-use egg::Pattern;
-use egg::Rewrite;
-use egg::Subst;
-use juniper_math_expression::ConstantFold;
-use juniper_math_expression::MathExpression;
-use lean_parse::lean_expr::Literal;
-use lean_parse::lean_expr::{LeanExpr, Name};
+use egg::{Condition, ConditionEqual, ConditionalApplier, EGraph, Id, Pattern, Rewrite, Subst};
+use juniper_math_expression::{ConstantFold, MathExpression};
+use lean_parse::lean_expr::{LeanExpr, Literal, Name};
 use num::BigInt;
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct JuniperJsonEntry {
@@ -274,6 +262,12 @@ impl LMEIntermediateRep {
             }),
             "Neg.neg" => Ok(LMEIntermediateRep::TUnary {
                 operator: Some("-".to_string()),
+                all_type: None,
+                inst: None,
+                in1: None,
+            }),
+            "Inv.inv" => Ok(LMEIntermediateRep::TUnary {
+                operator: Some("inv".to_string()),
                 all_type: None,
                 inst: None,
                 in1: None,
@@ -829,7 +823,9 @@ pub fn lean_to_rewrites(
                 .expect("bad rewrite"),
             );
         } else {
-            return Err(Error::msg("error in some rewrite creation"));
+            return Err(Error::msg(format!(
+                "error in some rewrite creation for {name}"
+            )));
         }
     }
 

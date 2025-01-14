@@ -30,6 +30,7 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 4. Parsing/printing is not verified beyond unit tests.
 
 ## TODO
+
 - [x] create `LeanExpr` -> `egg::Pattern` infrastructure
 - [x] create JuniperLean attribute to automatically turn marked theorems into JSON, and export them to a given file
 - [x] import JSON in Rust, turn it into a set of rewrites, and use that for the `egg::Runner`
@@ -40,8 +41,12 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] add license(s)?
 - [x] more expansive `lean_to_rewrite` architecture
 - [x] add support for automatic conditionals (e.g. encoding `x` as a rewrite condition for `x → a / 2 = a * (1 / 2)`) to `lean_to_rewrite`
-- [ ] add environment support (being able to assign variables, e.g. `(= x (* 5 y))` and `x / 5` → `y`)
+- [ ] add environment support to the repl (being able to assign variables, e.g. `(= x (* 5 y))` and `x / 5` → `y`)
 - [ ] write the actual set of theorems for conversion into the CAS
 - [ ] create system to turn `egg::Explanation` into Lean proofs (either textually (lol) or with a proof certificate)
+
+## Future work
+
+Future work in this area might work to resolve unsoundness issues (operator defintions, constant folding, formal verification), usability issues (a more complete repl, more interface features, a GUI), or integration into Lean (using the CAS as a command to generate a proof suggestion). Also, important to mention another project which is working in this direction: [lean-egg](https://github.com/marcusrossel/lean-egg) (doing equality saturation from within Lean about Lean statements).
 
 [^1]: Although, with a little effort, a very similar project could accomplish that!
