@@ -164,7 +164,7 @@ impl Display for MData {
 #[serde(rename_all_fields = "camelCase")]
 pub enum LeanExpr {
     BVar {
-        de_bruijn_index: u32,
+        de_bruijn_index: u64,
     },
     FVar {
         fvar_id: FVarId,
@@ -224,7 +224,7 @@ pub enum LeanExpr {
     },
     Proj {
         type_name: Name,
-        idx: u32,
+        idx: u64,
         #[serde(rename = "struct")]
         #[tree]
         structure: Box<LeanExpr>,

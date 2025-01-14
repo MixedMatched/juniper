@@ -19,6 +19,19 @@ pub struct JuniperJsonEntry {
 struct Hole;
 
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
+enum LMEIntermediateDefinedConst {
+    Pi,
+}
+
+impl Display for LMEIntermediateDefinedConst {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LMEIntermediateDefinedConst::Pi => write!(f, "π"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 enum LMEIntermediateConst {
     OfNat {
         out_type: Option<Name>,
@@ -80,7 +93,7 @@ impl Display for LMEIntermediateConst {
 // which is partially instantiable
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 enum LMEIntermediateRep {
-    Hole,
+    DefinedConst(LMEIntermediateDefinedConst),
     Const(LMEIntermediateConst),
     Var(Name),
     Forall {
@@ -122,7 +135,7 @@ enum LMEIntermediateRep {
 impl Display for LMEIntermediateRep {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            LMEIntermediateRep::Hole => write!(f, ""),
+            LMEIntermediateRep::DefinedConst(dc) => write!(f, "{dc}"),
             LMEIntermediateRep::Const(c) => write!(f, "{c}"),
             LMEIntermediateRep::Var(name) => write!(f, "?{name}"),
             LMEIntermediateRep::Forall { body, .. } => {
@@ -191,6 +204,9 @@ impl LMEIntermediateRep {
     // convert a declName to an uninstantiated intermediate representation
     fn name_to_ir(name: Name) -> Result<LMEIntermediateRep> {
         match name.as_str() {
+            "Real.pi" => Ok(LMEIntermediateRep::DefinedConst(
+                LMEIntermediateDefinedConst::Pi,
+            )),
             "OfScientific.ofScientific" => Ok(LMEIntermediateRep::Const(
                 LMEIntermediateConst::OfScientific {
                     out_type: None,
@@ -681,7 +697,15 @@ impl LMEIntermediateRep {
                     )));
                 },
             )),
-            LeanExpr::Const { .. } => Ok(LMEIntermediateRep::Hole),
+            LeanExpr::Const { decl_name, .. } => {
+                if let Ok(ir) = Self::name_to_ir(decl_name) {
+                    Ok(ir)
+                } else {
+                    Ok(LMEIntermediateRep::DefinedConst(
+                        LMEIntermediateDefinedConst::Pi,
+                    ))
+                }
+            }
             _ => Err(Error::msg(format!(
                 "improper top-level structure: {}",
                 expr
@@ -710,7 +734,9 @@ impl LMEIntermediateRep {
                 if let Some(body) = body {
                     if let Some(binder_type) = binder_type {
                         match *binder_type.clone() {
-                            LMEIntermediateRep::Hole => body.split_at_top_eq(conditions),
+                            LMEIntermediateRep::Const(_) | LMEIntermediateRep::DefinedConst(_) => {
+                                body.split_at_top_eq(conditions)
+                            }
                             b => body.split_at_top_eq({
                                 let mut new_conditions = conditions.clone();
                                 new_conditions.push(b);
@@ -814,14 +840,35 @@ pub fn lean_to_rewrites(
     for JuniperJsonEntry { name, typ: expr } in lean_exprs {
         let intermediate = LMEIntermediateRep::from_lean(expr)?;
         if let Some((conditions, eq1, eq2)) = intermediate.split_at_top_eq(Vec::new()) {
-            result.push(
-                Rewrite::new(
-                    name,
-                    eq1.to_math_expression()?,
-                    create_condition_applier(eq2.to_math_expression()?, conditions)?,
-                )
-                .expect("bad rewrite"),
+            let eq1_me = eq1.to_math_expression()?;
+            let eq2_me = eq2.to_math_expression()?;
+
+            let forward_rewrite = Rewrite::new(
+                name.clone() + "_forward",
+                eq1_me.clone(),
+                create_condition_applier(eq2_me.clone(), conditions.clone())?,
             );
+            let backward_rewrite = Rewrite::new(
+                name + "_backward",
+                eq2_me,
+                create_condition_applier(eq1_me, conditions)?,
+            );
+
+            // we only want to error out if no possible interpretation of the given theorem was
+            // correct
+            match (forward_rewrite, backward_rewrite) {
+                (Err(ef), Err(eb)) => {
+                    return Err(Error::msg(format!(
+                        "forward and backward rewrite failed:\n\tforward: {ef}\n\tbackward: {eb}"
+                    )))
+                }
+                (Ok(f), Err(_)) => result.push(f),
+                (Err(_), Ok(b)) => result.push(b),
+                (Ok(f), Ok(b)) => {
+                    result.push(f);
+                    result.push(b);
+                }
+            };
         } else {
             return Err(Error::msg(format!(
                 "error in some rewrite creation for {name}"

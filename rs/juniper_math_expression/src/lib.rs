@@ -94,6 +94,7 @@ impl std::fmt::Display for JuniperBigRational {
 define_language! {
     pub enum MathExpression {
         Constant(JuniperBigRational),
+        "π" = Pi,
         Variable(char),
         ":=" = Assign([Id; 2]),
         "=" = Eq([Id; 2]),
@@ -164,7 +165,14 @@ impl Analysis<MathExpression> for ConstantFold {
                 format!("(- {})", x(a)?).parse().unwrap(),
             ),
             MathExpression::Inv(a) => (
-                JuniperBigRational(x(a)?.0.inv()),
+                JuniperBigRational({
+                    let val = x(a)?.0;
+                    if *val.numer() == BigInt::ZERO {
+                        BigRational::new(0.into(), 1.into())
+                    } else {
+                        val.inv()
+                    }
+                }),
                 format!("(inv {})", x(a)?).parse().unwrap(),
             ),
             _ => return None,
@@ -205,6 +213,7 @@ pub fn approximate(re: &RecExpr<MathExpression>, id: &Id) -> Option<f64> {
     match &re[*id] {
         MathExpression::Constant(JuniperBigRational(big_rat)) => big_rat.to_f64(),
         MathExpression::Variable(_) => None,
+        MathExpression::Pi => Some(std::f64::consts::PI),
         MathExpression::Assign(_) => None,
         MathExpression::Eq(_) => None, // maybe in the future?
         MathExpression::Add([a, b]) => Some(approximate(re, &a)? + approximate(re, &b)?),
@@ -214,7 +223,14 @@ pub fn approximate(re: &RecExpr<MathExpression>, id: &Id) -> Option<f64> {
         MathExpression::Pow([a, b]) => Some(approximate(re, &a)?.powf(approximate(re, &b)?)),
         MathExpression::Sqrt(n) => Some(approximate(re, &n)?.sqrt()),
         MathExpression::Neg(n) => Some(-approximate(re, &n)?),
-        MathExpression::Inv(n) => Some(approximate(re, &n)?.inv()),
+        MathExpression::Inv(n) => Some({
+            let approximation = approximate(re, &n)?;
+            if approximation == 0.0 {
+                0.0
+            } else {
+                approximation.inv()
+            }
+        }),
         MathExpression::Sin(n) => Some(approximate(re, &n)?.sin()),
         MathExpression::Cos(n) => Some(approximate(re, &n)?.cos()),
         MathExpression::Antiderivative(_) => None,

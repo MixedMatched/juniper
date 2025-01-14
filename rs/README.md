@@ -1,7 +1,7 @@
 # juniper-rs
 
 This is the set of Rust crates representing the Juniper library. The purpose of each of the crates is as follows:
-- **lean_parse**: a set of data definitions for core Lean types used for serializing and deserializing Lean type information.
+- **lean_parse**: a set of data definitions for core Lean types used for serializing and deserializing Lean type information. (Note that these definitions are not fully correct, but are correct in-scope).
 - **juniper_math_expression**: the definition for MathExpression (Juniper's egg [Language](https://docs.rs/egg/latest/egg/trait.Language.html)), JuniperBigRational (a simple wrapper for parsing [num::BigRational](https://docs.rs/num-rational/0.4.2/num_rational/type.BigRational.html)), and ConstantFold (Juniper's egg [Analysis](https://docs.rs/egg/latest/egg/trait.Analysis.html) for eliminating constants).
 - **juniper_lean_to_rewrite**: an opinionated LeanExpr to MathExpression transpiler.
 - **juniper_lib**: the front-facing API for utilizing Juniper. Exposes an automatically generated list of Rewrites obtained from transpiling JuniperLean results, as well as using a build script to automatically re-elaborate JuniperLean when changes are detected.
