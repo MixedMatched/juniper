@@ -93,4 +93,4 @@ theorem u_pow_one (a : ℚ) : a ^ 1 = a := by
 
 #save_juniper_json "../exported.json"
 
-#show_type_json Real.cos_pi
+#show_type_json Rat.add_zero

@@ -67,7 +67,10 @@ mod tests {
         let approximation_constant = approximate(&me_constant, &me_constant.root());
         let actual_constant = 5.867;
 
-        assert!(approximation_constant.expect("approximation_constant failed") - actual_constant < EPSILON);
+        assert!(
+            approximation_constant.expect("approximation_constant failed") - actual_constant
+                < EPSILON
+        );
 
         let me_pi = "π".parse()?;
         let approximation_pi = approximate(&me_pi, &me_pi.root());

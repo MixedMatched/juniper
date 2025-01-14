@@ -1,0 +1,182 @@
+{"app":
+ {"fn":
+  {"app":
+   {"fn":
+    {"app":
+     {"fn": {"const": {"us": [{"succ": "zero"}], "declName": "Eq"}}, "arg": {"const": {"us": [], "declName": "Real"}}}},
+    "arg":
+    {"app":
+     {"fn": {"const": {"us": [], "declName": "Real.cos"}},
+      "arg":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HDiv.hDiv"}},
+                  "arg": {"const": {"us": [], "declName": "Real"}}}},
+                "arg": {"const": {"us": [], "declName": "Real"}}}},
+              "arg": {"const": {"us": [], "declName": "Real"}}}},
+            "arg":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn": {"const": {"us": ["zero"], "declName": "instHDiv"}},
+                "arg": {"const": {"us": [], "declName": "Real"}}}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero"], "declName": "DivInvMonoid.toDiv"}},
+                  "arg": {"const": {"us": [], "declName": "Real"}}}},
+                "arg": {"const": {"us": [], "declName": "Real.instDivInvMonoid"}}}}}}}},
+          "arg": {"const": {"us": [], "declName": "Real.pi"}}}},
+        "arg":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+              "arg": {"const": {"us": [], "declName": "Real"}}}},
+            "arg": {"lit": {"natVal": {"val": 4}}}}},
+          "arg":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero"], "declName": "instOfNatAtLeastTwo"}},
+                  "arg": {"const": {"us": [], "declName": "Real"}}}},
+                "arg": {"lit": {"natVal": {"val": 4}}}}},
+              "arg": {"const": {"us": [], "declName": "Real.instNatCast"}}}},
+            "arg":
+            {"app":
+             {"fn": {"const": {"us": [], "declName": "instNatAtLeastTwo"}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+                    "arg": {"const": {"us": [], "declName": "Nat"}}}},
+                  "arg": {"lit": {"natVal": {"val": 2}}}}},
+                "arg":
+                {"app":
+                 {"fn": {"const": {"us": [], "declName": "instOfNatNat"}},
+                  "arg": {"lit": {"natVal": {"val": 2}}}}}}}}}}}}}}}}}}},
+  "arg":
+  {"app":
+   {"fn":
+    {"app":
+     {"fn":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HDiv.hDiv"}},
+              "arg": {"const": {"us": [], "declName": "Real"}}}},
+            "arg": {"const": {"us": [], "declName": "Real"}}}},
+          "arg": {"const": {"us": [], "declName": "Real"}}}},
+        "arg":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn": {"const": {"us": ["zero"], "declName": "instHDiv"}},
+            "arg": {"const": {"us": [], "declName": "Real"}}}},
+          "arg":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn": {"const": {"us": ["zero"], "declName": "DivInvMonoid.toDiv"}},
+              "arg": {"const": {"us": [], "declName": "Real"}}}},
+            "arg": {"const": {"us": [], "declName": "Real.instDivInvMonoid"}}}}}}}},
+      "arg":
+      {"app":
+       {"fn": {"const": {"us": [], "declName": "Real.sqrt"}},
+        "arg":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+              "arg": {"const": {"us": [], "declName": "Real"}}}},
+            "arg": {"lit": {"natVal": {"val": 2}}}}},
+          "arg":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero"], "declName": "instOfNatAtLeastTwo"}},
+                  "arg": {"const": {"us": [], "declName": "Real"}}}},
+                "arg": {"lit": {"natVal": {"val": 2}}}}},
+              "arg": {"const": {"us": [], "declName": "Real.instNatCast"}}}},
+            "arg":
+            {"app":
+             {"fn": {"const": {"us": [], "declName": "instNatAtLeastTwo"}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+                    "arg": {"const": {"us": [], "declName": "Nat"}}}},
+                  "arg": {"lit": {"natVal": {"val": 0}}}}},
+                "arg":
+                {"app":
+                 {"fn": {"const": {"us": [], "declName": "instOfNatNat"}},
+                  "arg": {"lit": {"natVal": {"val": 0}}}}}}}}}}}}}}}}},
+    "arg":
+    {"app":
+     {"fn":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+          "arg": {"const": {"us": [], "declName": "Real"}}}},
+        "arg": {"lit": {"natVal": {"val": 2}}}}},
+      "arg":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn": {"const": {"us": ["zero"], "declName": "instOfNatAtLeastTwo"}},
+              "arg": {"const": {"us": [], "declName": "Real"}}}},
+            "arg": {"lit": {"natVal": {"val": 2}}}}},
+          "arg": {"const": {"us": [], "declName": "Real.instNatCast"}}}},
+        "arg":
+        {"app":
+         {"fn": {"const": {"us": [], "declName": "instNatAtLeastTwo"}},
+          "arg":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+                "arg": {"const": {"us": [], "declName": "Nat"}}}},
+              "arg": {"lit": {"natVal": {"val": 0}}}}},
+            "arg":
+            {"app":
+             {"fn": {"const": {"us": [], "declName": "instOfNatNat"}},
+              "arg": {"lit": {"natVal": {"val": 0}}}}}}}}}}}}}}}}}

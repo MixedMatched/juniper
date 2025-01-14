@@ -860,13 +860,322 @@ pub fn lean_to_rewrites(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
 
     #[test]
-    fn simple() {
-        let lean_statement = serde_json::from_str::<LeanExpr>(include_str!("test.json")).unwrap();
+    fn test_from_lean() -> Result<()> {
+        let add_zero_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/add_zero.json"))
+                .unwrap();
+        let add_zero_ir = LMEIntermediateRep::from_lean(add_zero_lean)?;
+        let add_zero_manual = LMEIntermediateRep::Forall {
+            binder_name: Some("a".to_string()),
+            binder_type: Some(Box::new(LMEIntermediateRep::DefinedConst(
+                LMEIntermediateDefinedConst::Pi,
+            ))),
+            body: Some(Box::new(LMEIntermediateRep::Eq {
+                all_type: Some("Rat".to_string()),
+                in1: Some(Box::new(LMEIntermediateRep::HBool {
+                    operator: Some("+".to_string()),
+                    in1_type: Some("Rat".to_string()),
+                    in2_type: Some("Rat".to_string()),
+                    out_type: Some("Rat".to_string()),
+                    inst: Some(Hole),
+                    in1: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                    in2: Some(Box::new(LMEIntermediateRep::Const(
+                        LMEIntermediateConst::OfNat {
+                            out_type: Some("Rat".to_string()),
+                            val: Some(0.into()),
+                            inst: Some(Hole),
+                        },
+                    ))),
+                })),
+                in2: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+            })),
+        };
 
-        let ir = LMEIntermediateRep::from_lean(lean_statement).unwrap();
+        assert_eq!(add_zero_ir, add_zero_manual);
 
-        println!("{ir}");
+        let cos_pi_div_four_lean = serde_json::from_str::<LeanExpr>(include_str!(
+            "../../test_assets/cos_pi_div_four.json"
+        ))
+        .unwrap();
+        let cos_pi_div_four_ir = LMEIntermediateRep::from_lean(cos_pi_div_four_lean)?;
+        let cos_pi_div_four_manual = LMEIntermediateRep::Eq {
+            all_type: Some("Real".to_string()),
+            in1: Some(Box::new(LMEIntermediateRep::IUnary {
+                operator: Some("cos".to_string()),
+                in1: Some(Box::new(LMEIntermediateRep::HBool {
+                    operator: Some("/".to_string()),
+                    in1_type: Some("Real".to_string()),
+                    in2_type: Some("Real".to_string()),
+                    out_type: Some("Real".to_string()),
+                    inst: Some(Hole),
+                    in1: Some(Box::new(LMEIntermediateRep::DefinedConst(
+                        LMEIntermediateDefinedConst::Pi,
+                    ))),
+                    in2: Some(Box::new(LMEIntermediateRep::Const(
+                        LMEIntermediateConst::OfNat {
+                            out_type: Some("Real".to_string()),
+                            val: Some(4.into()),
+                            inst: Some(Hole),
+                        },
+                    ))),
+                })),
+            })),
+            in2: Some(Box::new(LMEIntermediateRep::HBool {
+                operator: Some("/".to_string()),
+                in1_type: Some("Real".to_string()),
+                in2_type: Some("Real".to_string()),
+                out_type: Some("Real".to_string()),
+                inst: Some(Hole),
+                in1: Some(Box::new(LMEIntermediateRep::IUnary {
+                    operator: Some("sqrt".to_string()),
+                    in1: Some(Box::new(LMEIntermediateRep::Const(
+                        LMEIntermediateConst::OfNat {
+                            out_type: Some("Real".to_string()),
+                            val: Some(2.into()),
+                            inst: Some(Hole),
+                        },
+                    ))),
+                })),
+                in2: Some(Box::new(LMEIntermediateRep::Const(
+                    LMEIntermediateConst::OfNat {
+                        out_type: Some("Real".to_string()),
+                        val: Some(2.into()),
+                        inst: Some(Hole),
+                    },
+                ))),
+            })),
+        };
+
+        assert_eq!(cos_pi_div_four_ir, cos_pi_div_four_manual);
+
+        let inv_neg_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/inv_neg.json"))
+                .unwrap();
+        let inv_neg_ir = LMEIntermediateRep::from_lean(inv_neg_lean)?;
+        let inv_neg_manual = LMEIntermediateRep::Forall {
+            binder_name: Some("q".to_string()),
+            binder_type: Some(Box::new(LMEIntermediateRep::DefinedConst(
+                LMEIntermediateDefinedConst::Pi,
+            ))),
+            body: Some(Box::new(LMEIntermediateRep::Eq {
+                all_type: Some("Rat".to_string()),
+                in1: Some(Box::new(LMEIntermediateRep::TUnary {
+                    operator: Some("inv".to_string()),
+                    all_type: Some("Rat".to_string()),
+                    inst: Some(Hole),
+                    in1: Some(Box::new(LMEIntermediateRep::TUnary {
+                        operator: Some("-".to_string()),
+                        all_type: Some("Rat".to_string()),
+                        inst: Some(Hole),
+                        in1: Some(Box::new(LMEIntermediateRep::Var("q".to_string()))),
+                    })),
+                })),
+                in2: Some(Box::new(LMEIntermediateRep::TUnary {
+                    operator: Some("-".to_string()),
+                    all_type: Some("Rat".to_string()),
+                    inst: Some(Hole),
+                    in1: Some(Box::new(LMEIntermediateRep::TUnary {
+                        operator: Some("inv".to_string()),
+                        all_type: Some("Rat".to_string()),
+                        inst: Some(Hole),
+                        in1: Some(Box::new(LMEIntermediateRep::Var("q".to_string()))),
+                    })),
+                })),
+            })),
+        };
+
+        assert_eq!(inv_neg_ir, inv_neg_manual);
+
+        let mul_comm_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/mul_comm.json"))
+                .unwrap();
+        let mul_comm_ir = LMEIntermediateRep::from_lean(mul_comm_lean)?;
+        let mul_comm_manual = LMEIntermediateRep::Forall {
+            binder_name: Some("a".to_string()),
+            binder_type: Some(Box::new(LMEIntermediateRep::DefinedConst(
+                LMEIntermediateDefinedConst::Pi,
+            ))),
+            body: Some(Box::new(LMEIntermediateRep::Forall {
+                binder_name: Some("b".to_string()),
+                binder_type: Some(Box::new(LMEIntermediateRep::DefinedConst(
+                    LMEIntermediateDefinedConst::Pi,
+                ))),
+                body: Some(Box::new(LMEIntermediateRep::Eq {
+                    all_type: Some("Rat".to_string()),
+                    in1: Some(Box::new(LMEIntermediateRep::HBool {
+                        operator: Some("*".to_string()),
+                        in1_type: Some("Rat".to_string()),
+                        in2_type: Some("Rat".to_string()),
+                        out_type: Some("Rat".to_string()),
+                        inst: Some(Hole),
+                        in1: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                        in2: Some(Box::new(LMEIntermediateRep::Var("b".to_string()))),
+                    })),
+                    in2: Some(Box::new(LMEIntermediateRep::HBool {
+                        operator: Some("*".to_string()),
+                        in1_type: Some("Rat".to_string()),
+                        in2_type: Some("Rat".to_string()),
+                        out_type: Some("Rat".to_string()),
+                        inst: Some(Hole),
+                        in1: Some(Box::new(LMEIntermediateRep::Var("b".to_string()))),
+                        in2: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                    })),
+                })),
+            })),
+        };
+
+        assert_eq!(mul_comm_ir, mul_comm_manual);
+
+        let mul_inv_cancel_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/mul_inv_cancel.json"))
+                .unwrap();
+        let mul_inv_cancel_ir = LMEIntermediateRep::from_lean(mul_inv_cancel_lean)?;
+        let mul_inv_cancel_manual = LMEIntermediateRep::Forall {
+            binder_name: Some("a".to_string()),
+            binder_type: Some(Box::new(LMEIntermediateRep::DefinedConst(
+                LMEIntermediateDefinedConst::Pi,
+            ))),
+            body: Some(Box::new(LMEIntermediateRep::Forall {
+                binder_name: Some("a._@.Mathlib.Data.Rat.Defs._hyg.3473".to_string()),
+                binder_type: Some(Box::new(LMEIntermediateRep::Ne {
+                    all_type: Some("Rat".to_string()),
+                    in1: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                    in2: Some(Box::new(LMEIntermediateRep::Const(
+                        LMEIntermediateConst::OfNat {
+                            out_type: Some("Rat".to_string()),
+                            val: Some(0.into()),
+                            inst: Some(Hole),
+                        },
+                    ))),
+                })),
+                body: Some(Box::new(LMEIntermediateRep::Eq {
+                    all_type: Some("Rat".to_string()),
+                    in1: Some(Box::new(LMEIntermediateRep::HBool {
+                        operator: Some("*".to_string()),
+                        in1_type: Some("Rat".to_string()),
+                        in2_type: Some("Rat".to_string()),
+                        out_type: Some("Rat".to_string()),
+                        inst: Some(Hole),
+                        in1: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                        in2: Some(Box::new(LMEIntermediateRep::TUnary {
+                            operator: Some("inv".to_string()),
+                            all_type: Some("Rat".to_string()),
+                            inst: Some(Hole),
+                            in1: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                        })),
+                    })),
+                    in2: Some(Box::new(LMEIntermediateRep::Const(
+                        LMEIntermediateConst::OfNat {
+                            out_type: Some("Rat".to_string()),
+                            val: Some(1.into()),
+                            inst: Some(Hole),
+                        },
+                    ))),
+                })),
+            })),
+        };
+
+        assert_eq!(mul_inv_cancel_ir, mul_inv_cancel_manual);
+
+        let neg_add_cancel_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/neg_add_cancel.json"))
+                .unwrap();
+        let neg_add_cancel_ir = LMEIntermediateRep::from_lean(neg_add_cancel_lean)?;
+        let neg_add_cancel_manual = LMEIntermediateRep::Forall {
+            binder_name: Some("a".to_string()),
+            binder_type: Some(Box::new(LMEIntermediateRep::DefinedConst(
+                LMEIntermediateDefinedConst::Pi,
+            ))),
+            body: Some(Box::new(LMEIntermediateRep::Eq {
+                all_type: Some("Rat".to_string()),
+                in1: Some(Box::new(LMEIntermediateRep::HBool {
+                    operator: Some("+".to_string()),
+                    in1_type: Some("Rat".to_string()),
+                    in2_type: Some("Rat".to_string()),
+                    out_type: Some("Rat".to_string()),
+                    inst: Some(Hole),
+                    in1: Some(Box::new(LMEIntermediateRep::TUnary {
+                        operator: Some("-".to_string()),
+                        all_type: Some("Rat".to_string()),
+                        inst: Some(Hole),
+                        in1: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                    })),
+                    in2: Some(Box::new(LMEIntermediateRep::Var("a".to_string()))),
+                })),
+                in2: Some(Box::new(LMEIntermediateRep::Const(
+                    LMEIntermediateConst::OfNat {
+                        out_type: Some("Rat".to_string()),
+                        val: Some(0.into()),
+                        inst: Some(Hole),
+                    },
+                ))),
+            })),
+        };
+
+        assert_eq!(neg_add_cancel_ir, neg_add_cancel_manual);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_display() -> Result<()> {
+        let add_zero_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/add_zero.json"))
+                .unwrap();
+        let add_zero_ir = LMEIntermediateRep::from_lean(add_zero_lean)?;
+        let add_zero_str = format!("{add_zero_ir}");
+        let manual_add_zero = "(= (+ ?a 0) ?a)".to_string();
+
+        assert_eq!(add_zero_str, manual_add_zero);
+
+        let cos_pi_div_four_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/cos_pi_div_four.json"))
+                .unwrap();
+        let cos_pi_div_four_ir = LMEIntermediateRep::from_lean(cos_pi_div_four_lean)?;
+        let cos_pi_div_four_str = format!("{cos_pi_div_four_ir}");
+        let manual_cos_pi_div_four = "(= (cos (/ π 4)) (/ (sqrt 2) 2))".to_string();
+
+        assert_eq!(cos_pi_div_four_str, manual_cos_pi_div_four);
+
+        let inv_neg_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/inv_neg.json"))
+                .unwrap();
+        let inv_neg_ir = LMEIntermediateRep::from_lean(inv_neg_lean)?;
+        let inv_neg_str = format!("{inv_neg_ir}");
+        let manual_inv_neg = "(= (inv (- ?q)) (- (inv ?q)))".to_string();
+
+        assert_eq!(inv_neg_str, manual_inv_neg);
+
+        let mul_comm_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/mul_comm.json"))
+                .unwrap();
+        let mul_comm_ir = LMEIntermediateRep::from_lean(mul_comm_lean)?;
+        let mul_comm_str = format!("{mul_comm_ir}");
+        let manual_mul_comm = "(= (* ?a ?b) (* ?b ?a))".to_string();
+
+        assert_eq!(mul_comm_str, manual_mul_comm);
+
+        let mul_inv_cancel_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/mul_inv_cancel.json"))
+                .unwrap();
+        let mul_inv_cancel_ir = LMEIntermediateRep::from_lean(mul_inv_cancel_lean)?;
+        let mul_inv_cancel_str = format!("{mul_inv_cancel_ir}");
+        let manual_mul_inv_cancel = "(= (* ?a (inv ?a)) 1)".to_string();
+
+        assert_eq!(mul_inv_cancel_str, manual_mul_inv_cancel);
+
+        let neg_add_cancel_lean =
+            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/neg_add_cancel.json"))
+                .unwrap();
+        let neg_add_cancel_ir = LMEIntermediateRep::from_lean(neg_add_cancel_lean)?;
+        let neg_add_cancel_str = format!("{neg_add_cancel_ir}");
+        let manual_neg_add_cancel = "(= (+ (- ?a) ?a) 0)".to_string();
+
+        assert_eq!(neg_add_cancel_str, manual_neg_add_cancel);
+
+        Ok(())
     }
 }

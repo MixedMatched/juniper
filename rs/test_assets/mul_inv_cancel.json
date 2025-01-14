@@ -1,0 +1,81 @@
+{"forallE":
+ {"body":
+  {"forallE":
+   {"body":
+    {"app":
+     {"fn":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn": {"const": {"us": [{"succ": "zero"}], "declName": "Eq"}},
+          "arg": {"const": {"us": [], "declName": "Rat"}}}},
+        "arg":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn":
+                  {"app":
+                   {"fn": {"const": {"us": ["zero", "zero", "zero"], "declName": "HMul.hMul"}},
+                    "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"const": {"us": [], "declName": "Rat"}}}},
+              "arg":
+              {"app":
+               {"fn":
+                {"app":
+                 {"fn": {"const": {"us": ["zero"], "declName": "instHMul"}},
+                  "arg": {"const": {"us": [], "declName": "Rat"}}}},
+                "arg": {"const": {"us": [], "declName": "Rat.instMul"}}}}}},
+            "arg": {"bvar": {"deBruijnIndex": 1}}}},
+          "arg":
+          {"app":
+           {"fn":
+            {"app":
+             {"fn":
+              {"app":
+               {"fn": {"const": {"us": ["zero"], "declName": "Inv.inv"}},
+                "arg": {"const": {"us": [], "declName": "Rat"}}}},
+              "arg": {"const": {"us": [], "declName": "Rat.instInv"}}}},
+            "arg": {"bvar": {"deBruijnIndex": 1}}}}}}}},
+      "arg":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+            "arg": {"const": {"us": [], "declName": "Rat"}}}},
+          "arg": {"lit": {"natVal": {"val": 1}}}}},
+        "arg":
+        {"app": {"fn": {"const": {"us": [], "declName": "Rat.instOfNat"}}, "arg": {"lit": {"natVal": {"val": 1}}}}}}}}},
+    "binderType":
+    {"app":
+     {"fn":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn": {"const": {"us": [{"succ": "zero"}], "declName": "Ne"}},
+          "arg": {"const": {"us": [], "declName": "Rat"}}}},
+        "arg": {"bvar": {"deBruijnIndex": 0}}}},
+      "arg":
+      {"app":
+       {"fn":
+        {"app":
+         {"fn":
+          {"app":
+           {"fn": {"const": {"us": ["zero"], "declName": "OfNat.ofNat"}},
+            "arg": {"const": {"us": [], "declName": "Rat"}}}},
+          "arg": {"lit": {"natVal": {"val": 0}}}}},
+        "arg":
+        {"app": {"fn": {"const": {"us": [], "declName": "Rat.instOfNat"}}, "arg": {"lit": {"natVal": {"val": 0}}}}}}}}},
+    "binderName": "a._@.Mathlib.Data.Rat.Defs._hyg.3473",
+    "binderInfo": "default"}},
+  "binderType": {"const": {"us": [], "declName": "Rat"}},
+  "binderName": "a",
+  "binderInfo": "default"}}
