@@ -178,6 +178,7 @@ pub enum LeanExpr {
     Const {
         decl_name: Name,
         #[ignore_field]
+        #[allow(unused_variables)]
         us: Vec<Level>,
     },
     App {

@@ -44,6 +44,7 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] add environment support to the repl (being able to assign variables, e.g. `(= x (* 5 y))` and `x / 5` → `y`)
 - [ ] test juniper_math_expression
 - [ ] test juniper_lean_to_rewrite
+- [ ] test juniper_lib
 - [ ] write the actual set of theorems for conversion into the CAS
 - [ ] create system to turn `egg::Explanation` into Lean proofs (either textually (lol) or with a proof certificate)
 
