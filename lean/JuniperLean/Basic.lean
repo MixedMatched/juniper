@@ -11,7 +11,7 @@ attribute [juniper_json] Rat.mul_comm
 attribute [juniper_json] Rat.mul_one
 attribute [juniper_json] Rat.mul_zero
 attribute [juniper_json] Rat.mul_add
-attribute [juniper_json] Rat.mul_inv_cancel
+-- attribute [juniper_json] Rat.mul_inv_cancel -- Ne causes soundness issues (e.g. inv 0 != 0)
 attribute [juniper_json] Rat.sub_eq_add_neg
 attribute [juniper_json] Rat.inv_neg
 attribute [juniper_json] Real.one_rpow
@@ -70,6 +70,8 @@ attribute [juniper_json] Real.sin_two_pi
 attribute [juniper_json] Real.sin_two_pi_sub
 attribute [juniper_json] Real.two_mul_sin_mul_cos
 attribute [juniper_json] Real.two_mul_sin_mul_sin
+attribute [juniper_json] Real.rpow_one
+attribute [juniper_json] Real.rpow_zero
 
 @[juniper_json]
 theorem involutive_neg_neg (a : ℚ) : -(-a) = a := by
@@ -87,10 +89,4 @@ theorem add_neg_neg (a b : ℚ) : (-a) + (-b) = -(a + b) := by
 theorem mul_self (a : ℚ) : a * a = a ^ 2 := by
   linarith
 
-@[juniper_json]
-theorem u_pow_one (a : ℚ) : a ^ 1 = a := by
-  exact pow_one a
-
 #save_juniper_json "../exported.json"
-
-#show_type_json Rat.add_zero

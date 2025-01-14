@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+
 use std::collections::HashMap;
 use std::fmt::Display;
 
@@ -178,7 +180,6 @@ pub enum LeanExpr {
     Const {
         decl_name: Name,
         #[ignore_field]
-        #[allow(unused_variables)]
         us: Vec<Level>,
     },
     App {

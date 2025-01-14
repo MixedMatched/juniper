@@ -1,7 +1,9 @@
 use anyhow::{Error, Result};
-use egg::{AstSize, Extractor, Id, Language, Pattern, RecExpr, Rewrite, Runner};
-use juniper_lib::{approximate, get_juniper_rules, is_atomic, ConstantFold, MathExpression};
-use std::io;
+use egg::{AstSize, Extractor, Id, Language, Pattern, RecExpr, Rewrite};
+use juniper_lib::{
+    approximate, get_juniper_rules, is_atomic, JuniperRewrite, JuniperRunner, MathExpression,
+};
+use std::{fs::File, io::{self, Write}};
 
 // courtesy of Remy Wang on the E-Graphs Zulip
 fn split<L: Language>(e: &RecExpr<L>) -> Vec<RecExpr<L>> {
@@ -12,10 +14,11 @@ fn split<L: Language>(e: &RecExpr<L>) -> Vec<RecExpr<L>> {
         .collect()
 }
 
+// creates a set of rewrites that will operate on either side of an assignment to the other side
 fn create_assignment(
     num: usize,
     expr: &RecExpr<MathExpression>,
-) -> Result<Option<[Rewrite<MathExpression, ConstantFold>; 2]>> {
+) -> Result<Option<[JuniperRewrite; 2]>> {
     match expr[expr.root()] {
         MathExpression::Assign(_) => {
             let children = split(expr);
@@ -67,12 +70,15 @@ fn main() -> Result<()> {
             Ok(_) => {
                 let expr: RecExpr<MathExpression> = input.parse()?;
 
-                let runner: Runner<MathExpression, ConstantFold> =
-                    Runner::default().with_expr(&expr).run(&rules);
+                let mut runner = JuniperRunner::default().with_explanations_enabled().with_expr(&expr).run(&rules);
                 let extractor = Extractor::new(&runner.egraph, AstSize);
 
                 let (_, best_expr) = extractor.find_best(runner.roots[0]);
                 println!("{}", best_expr);
+
+                let mut file = File::create("explanation.txt")?;
+                let explanation = runner.explain_equivalence(&expr, &best_expr);
+                file.write_all(explanation.get_string().as_bytes())?;
 
                 if !is_atomic(&best_expr, &best_expr.root()) {
                     if let Some(approximation) = approximate(&best_expr, &best_expr.root()) {

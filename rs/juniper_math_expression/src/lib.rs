@@ -9,8 +9,3 @@ pub use constant_fold::ConstantFold;
 
 mod approximate;
 pub use approximate::approximate;
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-}

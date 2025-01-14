@@ -1,6 +1,6 @@
 use egg::{merge_option, Analysis, DidMerge, EGraph, Id, Language, PatternAst};
 use num::{
-    traits::{Inv, Pow},
+    traits::Pow,
     BigInt, BigRational, FromPrimitive,
 };
 
@@ -55,17 +55,6 @@ impl Analysis<MathExpression> for ConstantFold {
             MathExpression::Neg(a) => (
                 JuniperBigRational(-x(a)?.0),
                 format!("(- {})", x(a)?).parse().unwrap(),
-            ),
-            MathExpression::Inv(a) => (
-                JuniperBigRational({
-                    let val = x(a)?.0;
-                    if *val.numer() == BigInt::ZERO {
-                        BigRational::new(0.into(), 1.into())
-                    } else {
-                        val.inv()
-                    }
-                }),
-                format!("(inv {})", x(a)?).parse().unwrap(),
             ),
             _ => return None,
         })

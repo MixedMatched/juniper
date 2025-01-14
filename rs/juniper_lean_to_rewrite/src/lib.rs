@@ -792,6 +792,7 @@ fn create_condition_applier(
         Pattern<MathExpression>,
     >,
 > {
+    if !conditions.is_empty() { println!("creating cond app for {applier:?} with conditions {conditions:?}"); }
     Ok(ConditionalApplier {
         condition: Box::new({
             conditions.into_iter().try_rfold::<Box<
@@ -1131,9 +1132,10 @@ mod tests {
 
         assert_eq!(add_zero_str, manual_add_zero);
 
-        let cos_pi_div_four_lean =
-            serde_json::from_str::<LeanExpr>(include_str!("../../test_assets/cos_pi_div_four.json"))
-                .unwrap();
+        let cos_pi_div_four_lean = serde_json::from_str::<LeanExpr>(include_str!(
+            "../../test_assets/cos_pi_div_four.json"
+        ))
+        .unwrap();
         let cos_pi_div_four_ir = LMEIntermediateRep::from_lean(cos_pi_div_four_lean)?;
         let cos_pi_div_four_str = format!("{cos_pi_div_four_ir}");
         let manual_cos_pi_div_four = "(= (cos (/ π 4)) (/ (sqrt 2) 2))".to_string();
