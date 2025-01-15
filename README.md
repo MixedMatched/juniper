@@ -18,7 +18,7 @@ For a more detailed explanation, see the [Lean README](lean/README.md) and the [
 
 ### Domain
 
-While the basic datatype of numbers in this project is the Rationals, the operating domain of its mathematical rules is not. All numbers and expressions should be expected to be in the Reals, but only the Rational subset of the Reals is represented by constants. Approximation is also done in the Reals (but represented by floats).
+While the basic datatype of numbers in this project is ℚ, the operating domain of its mathematical rules is not. All numbers and expressions should be expected to be in ℝ, but only the subset ℚ of ℝ is represented by constants. Approximation is also done in ℝ (but represented by floats).
 
 ### (Un)Soundness
 
@@ -51,6 +51,22 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 
 ## Future work
 
-Future work in this area might work to resolve unsoundness issues (operator definitions, constant folding, formal verification), resolve usability issues (a more complete repl, more interface features, a GUI), create an integration into Lean (using the CAS as a command to generate a proof suggestion), or create a more complete rule transition system (conditionals embedded into the language itself for evalution, extracting mvars, computable function transfer). Also, important to mention another project which is working in an adjacent direction: [lean-egg](https://github.com/marcusrossel/lean-egg) (doing equality saturation from within Lean about Lean statements).
+Future work in this area might work to:
+- resolve unsoundness issues 
+    - equivalent operator definitions
+    - speicified constant folding
+    - formal verification
+- resolve usability issues
+    - a more complete repl
+    - more interface features
+    - a GUI
+- create an integration into Lean
+    - using the CAS as a command to generate a proof suggestion
+- or to create a more complete rule transition system
+    - conditionals embedded into the language itself for evalution (good for avioding soundness issues related to conditional rewrites)
+    - extracting mvars
+    - computable function transfer
+
+Also, important to mention another project which is working in an adjacent direction: [lean-egg](https://github.com/marcusrossel/lean-egg) (doing equality saturation from within Lean about Lean statements).
 
 [^1]: Although, with a little effort, a very similar project could accomplish that!
