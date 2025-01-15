@@ -1,1 +1,0 @@
-(Explanation (inv (inv 5)) (Rewrite=> involutive_inv_inv_forward 5))

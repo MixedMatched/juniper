@@ -14,10 +14,11 @@ attribute [juniper_json] Rat.mul_add
 -- attribute [juniper_json] Rat.mul_inv_cancel -- Ne causes soundness issues (e.g. inv 0 != 0)
 attribute [juniper_json] Rat.sub_eq_add_neg
 attribute [juniper_json] Rat.inv_neg
-attribute [juniper_json] Real.one_rpow
 attribute [juniper_json] Real.cos_add
 attribute [juniper_json] Real.cos_neg
 attribute [juniper_json] Real.cos_pi
+attribute [juniper_json] Real.cos_sq
+attribute [juniper_json] Real.cos_sq'
 attribute [juniper_json] Real.cos_sub
 attribute [juniper_json] Real.cos_zero
 attribute [juniper_json] Real.cos_add_pi
@@ -44,6 +45,7 @@ attribute [juniper_json] Real.cos_two_pi_sub
 attribute [juniper_json] Real.sin_add
 attribute [juniper_json] Real.sin_neg
 attribute [juniper_json] Real.sin_pi
+attribute [juniper_json] Real.sin_sq
 attribute [juniper_json] Real.sin_sub
 attribute [juniper_json] Real.sin_zero
 attribute [juniper_json] Real.sin_add_pi
@@ -70,6 +72,7 @@ attribute [juniper_json] Real.sin_two_pi
 attribute [juniper_json] Real.sin_two_pi_sub
 attribute [juniper_json] Real.two_mul_sin_mul_cos
 attribute [juniper_json] Real.two_mul_sin_mul_sin
+attribute [juniper_json] Real.one_rpow
 attribute [juniper_json] Real.rpow_one
 attribute [juniper_json] Real.rpow_zero
 

@@ -3,7 +3,7 @@ use egg::{AstSize, Extractor, Id, Language, Pattern, RecExpr, Rewrite};
 use juniper_lib::{
     approximate, get_juniper_rules, is_atomic, JuniperRewrite, JuniperRunner, MathExpression,
 };
-use std::{fs::File, io::{self, Write}};
+use::std::io;
 
 // courtesy of Remy Wang on the E-Graphs Zulip
 fn split<L: Language>(e: &RecExpr<L>) -> Vec<RecExpr<L>> {
@@ -70,15 +70,11 @@ fn main() -> Result<()> {
             Ok(_) => {
                 let expr: RecExpr<MathExpression> = input.parse()?;
 
-                let mut runner = JuniperRunner::default().with_explanations_enabled().with_expr(&expr).run(&rules);
+                let runner = JuniperRunner::default().with_expr(&expr).run(&rules);
                 let extractor = Extractor::new(&runner.egraph, AstSize);
 
                 let (_, best_expr) = extractor.find_best(runner.roots[0]);
                 println!("{}", best_expr);
-
-                let mut file = File::create("explanation.txt")?;
-                let explanation = runner.explain_equivalence(&expr, &best_expr);
-                file.write_all(explanation.get_string().as_bytes())?;
 
                 if !is_atomic(&best_expr, &best_expr.root()) {
                     if let Some(approximation) = approximate(&best_expr, &best_expr.root()) {

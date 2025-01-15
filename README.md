@@ -1,10 +1,10 @@
 # Juniper CAS
 
-Juniper is a formally-specified computer algebra system written in Rust and formalized in Lean 4. This is meant to be a toy project to demonstrate how these systems can work together, and not really a ready-made library.
+Juniper is a formally-specified computer algebra library written in Rust and formalized in Lean 4. This is meant to be a toy project to demonstrate how these systems can work together, not a ready-made or feature-rich library.
 
 ## What?
 
-A CAS, or [Computer Algebra System](https://en.wikipedia.org/wiki/Computer_algebra_system), is a library or program which can symbolically manipulate algebraic statements. For example, simplifying the statement `(x * x * y) / x + (3 + 2) * x` to `x * y + 5 * x` is a problem CASs are built to solve. Juniper is a CAS library, written in Rust, which uses formal definitions from Lean 4 to understand which mathematical rules are applicable to a given statement.
+A CAS, or [Computer Algebra System](https://en.wikipedia.org/wiki/Computer_algebra_system), is a library or program which can symbolically manipulate algebraic statements. For example, simplifying the statement `(+ (^ (sin x) (+ (sin (/ π 2)) (cos (* 2 π)))) (^ (cos (inv (inv x))) 2))` to `1` is a problem CASs are built to solve. Juniper is a CAS library, written in Rust, which uses formal definitions from Lean 4 to understand which mathematical rules are applicable to a given statement.
 
 ## How?
 
@@ -18,16 +18,16 @@ For a more detailed explanation, see the [Lean README](lean/README.md) and the [
 
 ### Domain
 
-While the basic datatype of numbers in this project are Rationals, the operating domain of mathematical rules is not. All numbers and expressions should be expected to be in the Reals, but only the Rational subset of the Reals are represented by constants. Approximation is also done in the Reals (but represented by floats).
+While the basic datatype of numbers in this project is the Rationals, the operating domain of its mathematical rules is not. All numbers and expressions should be expected to be in the Reals, but only the Rational subset of the Reals is represented by constants. Approximation is also done in the Reals (but represented by floats).
 
 ### (Un)Soundness
 
 The point of this project is not to create a perfectly sound CAS using Lean proofs[^1], more to demonstrate how results in Lean can be automatically leveraged and utilized for computer algebra (or other similar rule-rewriting systems). A few things result from this distinction:
 
-1. The conceptions of certain mathematical concepts are not the same in Lean as they are in Juniper. For a myriad of reasons, many mathematical operators in Lean are defined in ways which are unusual for the uninitiated. The constant folding in Juniper does not (currently) line up with Lean's understanding of those operators.
+1. The conceptions of certain mathematical concepts are not the same in Lean as they are in Juniper. For a myriad of reasons, many mathematical operators in Lean are defined in ways which are unusual for the uninitiated. The constant folding in Juniper doesn't line up exactly with Lean's understanding of those operators.
 2. Constant folding in Juniper is also not formally specified. Accomplishing that would essentially require an entire secondary conversion process, but with more complex conversion for computable definitions of functions (which is quite far out of the scope of this project).
 3. Equality saturation is also not formalized (mostly because it comes from egg).
-4. Parsing/printing is not verified beyond unit tests.
+4. Parsing, printing, and transpilation is not verified beyond unit tests.
 
 ## TODO
 
@@ -45,12 +45,12 @@ The point of this project is not to create a perfectly sound CAS using Lean proo
 - [x] test juniper_math_expression
 - [x] test juniper_lean_to_rewrite
 - [x] test juniper_lib
-- [ ] write the actual set of theorems for conversion into the CAS
+- [x] write the actual set of theorems for conversion into the CAS
 - [ ] fix ne soundness issue? not really sure how to approach this one
 - [ ] create system to turn `egg::Explanation` into Lean proofs (either textually (lol) or with a proof certificate)
 
 ## Future work
 
-Future work in this area might work to resolve unsoundness issues (operator defintions, constant folding, formal verification), usability issues (a more complete repl, more interface features, a GUI), or integration into Lean (using the CAS as a command to generate a proof suggestion). Also, important to mention another project which is working in this direction: [lean-egg](https://github.com/marcusrossel/lean-egg) (doing equality saturation from within Lean about Lean statements).
+Future work in this area might work to resolve unsoundness issues (operator definitions, constant folding, formal verification), resolve usability issues (a more complete repl, more interface features, a GUI), create an integration into Lean (using the CAS as a command to generate a proof suggestion), or create a more complete rule transition system (conditionals embedded into the language itself for evalution, extracting mvars, computable function transfer). Also, important to mention another project which is working in an adjacent direction: [lean-egg](https://github.com/marcusrossel/lean-egg) (doing equality saturation from within Lean about Lean statements).
 
 [^1]: Although, with a little effort, a very similar project could accomplish that!
